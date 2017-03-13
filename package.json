@@ -1,0 +1,22 @@
+{
+  "name": "modular",
+  "version": "0.1.0",
+  "description": "Just a library for reading data about modules. It's meant to help me with my own project, so it's probably not useful to anyone else.",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andypyrope/modular.git"
+  },
+  "keywords": [
+    "modular"
+  ],
+  "author": "Andrey Lalev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andypyrope/modular/issues"
+  },
+  "homepage": "https://github.com/andypyrope/modular#readme"
+}

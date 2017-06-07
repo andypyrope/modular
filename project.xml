@@ -1,0 +1,4 @@
+<ProjectRoot name="client" webpackFile="webpack.config.js" tsFolder="src/ts" stylesFolder="src/less">
+<PageModule id="login">
+</PageModule>
+</ProjectRoot>

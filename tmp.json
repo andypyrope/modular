@@ -1,0 +1,75 @@
+{
+    "ProjectRoot": {
+        "$": {
+            "name": "client",
+            "webpack": "webpack.config.js",
+            "tsFolder": "src/ts",
+            "stylesFolder": "src/less"
+        },
+        "$$": {
+            "Directory": [
+                {
+                    "$": {
+                        "name": "pages"
+                    },
+                    "$$": {
+                        "PageModule": [
+                            {
+                                "$": {
+                                    "name": "login"
+                                },
+                                "_": "before middle after",
+                                "$$": {
+                                    "Dependency": [
+                                        {
+                                            "$": {
+                                                "attr": "attrValue"
+                                            },
+                                            "_": "meow"
+                                        },
+                                        "meow2",
+                                        {
+                                            "$": {
+                                                "attr": "attrValue3"
+                                            },
+                                            "_": "meow3"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$": {
+                        "name": "widgets",
+                        "isLib": "true"
+                    },
+                    "$$": {
+                        "LibModule": [
+                            {
+                                "$": {
+                                    "name": "login"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "$": {
+                        "name": "widgets2"
+                    },
+                    "$$": {
+                        "LibModule": [
+                            {
+                                "$": {
+                                    "name": "login"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}

@@ -55,7 +55,7 @@
          "check-type"
       ],
       "no-unused-variable": [
-         true,
+         false,
          "check-parameters",
          {"ignore-pattern": "^x_"}
       ],

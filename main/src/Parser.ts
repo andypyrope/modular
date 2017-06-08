@@ -2,7 +2,7 @@ import * as xml2js from "xml2js";
 import * as fs from "fs";
 import { ProjectRoot } from "./types/ProjectRoot";
 import { Validator } from "validator.ts/Validator";
-import { XmlObjectBuildingError } from "./err/XmlObjectBuildingError"
+import { XmlObjectBuildingError } from "./err/XmlObjectBuildingError";
 
 export class Parser {
    private parsed: ProjectRoot;

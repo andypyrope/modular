@@ -51,7 +51,7 @@ export abstract class XmlObjectBase implements XmlObject {
       this.initialize();
    }
 
-   public setParent(parent: XmlObject) {
+   public setParent(parent: XmlObject): void {
       this.parent = parent;
    }
 

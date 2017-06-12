@@ -29,6 +29,7 @@
   "devDependencies": {
     "del": "^2.2.2",
     "gulp": "^3.9.1",
+    "gulp-clean-dest": "^0.2.0",
     "gulp-copy": "^1.0.0",
     "gulp-jasmine": "^2.4.2",
     "gulp-replace": "^0.5.4",

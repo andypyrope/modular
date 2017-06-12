@@ -5,6 +5,7 @@ import { ExpectedSingleChildError } from "./../err/ExpectedSingleChildError";
 import { AttributeNotFoundError } from "./../err/AttributeNotFoundError";
 import { NoTextContentError } from "./../err/NoTextContentError";
 import { FormattedString } from "./../util/FormattedString";
+import { XmlObjectBuilder } from "./../util/XmlObjectBuilder";
 
 export abstract class XmlObjectBase implements XmlObject {
    private static readonly CONTENT_KEY: string = "_";
@@ -75,7 +76,7 @@ export abstract class XmlObjectBase implements XmlObject {
          return this.instantiatedChildren[typeName][0];
       }
 
-      let child: T = new type(childrenOfTag[0], this);
+      let child: T = XmlObjectBuilder.instantiate<T>(childrenOfTag[0], type, this);
       delete this.unusedChildTypes[typeName];
       return child;
    }
@@ -93,7 +94,7 @@ export abstract class XmlObjectBase implements XmlObject {
 
       let children: T[] = [];
       for (let childOfTag of childrenOfTag) {
-         children.push(new type(childOfTag, this));
+         children.push( XmlObjectBuilder.instantiate<T>(childOfTag, type, this));
       }
 
       delete this.unusedChildTypes[typeName];

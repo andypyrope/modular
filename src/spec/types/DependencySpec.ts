@@ -1,4 +1,4 @@
-import { Dependency } from "./../main-src/types/Dependency";
+import { Dependency } from "./../../main/types/Dependency";
 
 describe("Dependency", (): void => {
    beforeEach((): void => {

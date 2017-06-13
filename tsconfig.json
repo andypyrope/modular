@@ -9,8 +9,11 @@
       "outDir": "./dist",
       "rootDir": "./src"
    },
-   "filesGlob": [
+   "include": [
       "./src/**/*.ts",
       "./typings/main.d.ts"
+   ],
+   "exclude": [
+      "./../main/src/**/*.ts"
    ]
 }

@@ -10,12 +10,14 @@ var del = require('del');
 var gulpCopy = require('gulp-copy');
 var tslint = require("gulp-tslint");
 var cleanDest = require('gulp-clean-dest');
+var gulpIgnore = require('gulp-ignore');
 
 // ========
 // ======== BUILD
 // ========
 
 function standardTsProject(taskName, baseDir, options) {
+   var suffix = taskName ? ('-' + taskName) : '';
    options = options || {};
    var buildDir = path.join(baseDir, 'dist');
    var srcDir = path.join(baseDir, 'src');
@@ -23,14 +25,15 @@ function standardTsProject(taskName, baseDir, options) {
    var tsProject = typescript.createProject(tsconfigFile, {
       typescript: require('typescript')
    });
-   gulp.task('lint-' + taskName, function () {
+   gulp.task('lint' + suffix, function () {
       return gulp.src(path.join(srcDir, "**", "*.ts"))
+         .pipe(gulpIgnore.exclude(path.join(srcDir, "**", "*.d.ts")))
          .pipe(tslint({
             formatter: "verbose"
          }))
-         .pipe(tslint.report())
+         .pipe(tslint.report());
    });
-   gulp.task('gen-' + taskName, function () {
+   gulp.task('gen' + suffix, function () {
       var result = tsProject.src()
          .pipe(sourcemaps.init())
          .pipe(tsProject()).js
@@ -41,58 +44,25 @@ function standardTsProject(taskName, baseDir, options) {
       return result.pipe(cleanDest(buildDir))
          .pipe(gulp.dest(buildDir));
    });
-   gulp.task('build-' + taskName, function (callback) {
+   gulp.task('build' + suffix, function (callback) {
       runSequence(
-         'lint-' + taskName,
-         'gen-' + taskName, callback);
+         'lint' + suffix,
+         'gen' + suffix, callback);
    });
 }
-gulp.task('copy-main-to-spec', function () {
-   return gulp.src('./main/src/**/*.ts')
-      .pipe(cleanDest('./spec/src/main-src'))
-      .pipe(gulpCopy('./spec/src/main-src', { prefix: 2 }));
-});
-
-standardTsProject('main', './main');
-standardTsProject('spec-without-copying-main', './spec', {
-   postCompileCallback: function (result) {
-      return result.pipe(replace('/main-src/', '/../../main/dist/'));
-   }
-});
-
-gulp.task('build-spec', function (callback) {
-   runSequence(
-      'copy-main-to-spec',
-      'build-spec-without-copying-main', callback);
-});
-gulp.task('build-main-and-copy', function (callback) {
-   runSequence(
-      'build-main',
-      'clear-main-from-spec',
-      'copy-main-to-spec', callback);
-});
-
-gulp.task('build', function (callback) {
-   runSequence(
-      'build-main',
-      'build-spec', callback);
-});
+standardTsProject('', '.');
 
 // ========
 // ======== TEST
 // ========
 
 gulp.task('test-only', function () {
-   return gulp.src('./spec/dist/**/*.js')
+   return gulp.src('./dist/spec/**/*.js')
       .pipe(jasmine());
-});
-gulp.task('clean-main-src-dir', function () {
-   return del(['./spec/dist/main-src/**']);
 });
 gulp.task('test', function (callback) {
    runSequence(
       'build',
-      'clean-main-src-dir',
       'test-only', callback);
 });
 
@@ -109,8 +79,6 @@ gulp.task('default', function () {
       console.log(totalIndentation + msg);
    }
    log(0, "There is no default task. The available tasks are:");
-   log(1, "build-main");
-   log(1, "build-spec");
-   log(1, "build: build main and only if it succeeds, build spec as well");
+   log(1, "build: build main and spec");
    log(1, "test: build main and spec and only if it succeeds, run the tests");
 });

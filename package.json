@@ -4,8 +4,8 @@
   "description": "Just a library for reading data about modules. It's meant to help me with my own project, so it's probably not useful to anyone else.",
   "main": "index.js",
   "scripts": {
-     "build": "gulp build",
-     "test": "gulp test"
+    "build": "gulp build",
+    "test": "gulp test"
   },
   "typescript": {
     "definition": "index.d.ts"
@@ -24,25 +24,19 @@
   },
   "homepage": "https://github.com/andypyrope/modular#readme",
   "dependencies": {
-    "validator.ts": "^0.2.2",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
-    "del": "^2.2.2",
+    "find": "^0.2.7",
     "gulp": "^3.9.1",
     "gulp-clean-dest": "^0.2.0",
-    "gulp-copy": "^1.0.0",
     "gulp-ignore": "^2.0.2",
     "gulp-jasmine": "^2.4.2",
-    "gulp-replace": "^0.5.4",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-tslint": "^8.1.1",
-    "gulp-typescript": "^3.1.6",
-    "jasmine": "^2.5.3",
-    "jasmine-reporters": "^2.2.1",
-    "jasmine-ts": "^0.1.2",
-    "run-sequence": "^1.2.2",
-    "tslint": "^5.2.0",
-    "typescript": "^2.2.2"
+    "gulp-typescript": "^3.2.0",
+    "run-sequence": "^2.0.0",
+    "tslint": "^5.5.0",
+    "typescript": "^2.4.1"
   }
 }

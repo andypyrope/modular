@@ -3,54 +3,40 @@ var path = require('path');
 var sourcemaps = require('gulp-sourcemaps');
 const typescript = require('gulp-typescript');
 const jasmine = require('gulp-jasmine');
-const reporters = require('jasmine-reporters');
 var runSequence = require('run-sequence');
-var replace = require('gulp-replace');
-var del = require('del');
-var gulpCopy = require('gulp-copy');
-var tslint = require("gulp-tslint");
+var tslint = require('gulp-tslint');
 var cleanDest = require('gulp-clean-dest');
 var gulpIgnore = require('gulp-ignore');
+var MyReporter = require('./MyReporter');
 
 // ========
 // ======== BUILD
 // ========
 
-function standardTsProject(taskName, baseDir, options) {
-   var suffix = taskName ? ('-' + taskName) : '';
-   options = options || {};
-   var buildDir = path.join(baseDir, 'dist');
-   var srcDir = path.join(baseDir, 'src');
-   var tsconfigFile = path.join(baseDir, 'tsconfig.json');
-   var tsProject = typescript.createProject(tsconfigFile, {
+var buildDir = path.join('.', 'dist');
+var srcDir = path.join('.', 'src');
+gulp.task('lint', function () {
+   return gulp.src(path.join(srcDir, '**', '*.ts'))
+      .pipe(gulpIgnore.exclude(path.join(srcDir, '**', '*.d.ts')))
+      .pipe(tslint({
+         formatter: 'verbose'
+      }))
+      .pipe(tslint.report());
+});
+gulp.task('gen', function () {
+   var tsProject = typescript.createProject(path.join('.', 'tsconfig.json'), {
       typescript: require('typescript')
    });
-   gulp.task('lint' + suffix, function () {
-      return gulp.src(path.join(srcDir, "**", "*.ts"))
-         .pipe(gulpIgnore.exclude(path.join(srcDir, "**", "*.d.ts")))
-         .pipe(tslint({
-            formatter: "verbose"
-         }))
-         .pipe(tslint.report());
-   });
-   gulp.task('gen' + suffix, function () {
-      var result = tsProject.src()
-         .pipe(sourcemaps.init())
-         .pipe(tsProject()).js
-         .pipe(sourcemaps.write());
-      if (options.postCompileCallback) {
-         result = options.postCompileCallback(result);
-      }
-      return result.pipe(cleanDest(buildDir))
-         .pipe(gulp.dest(buildDir));
-   });
-   gulp.task('build' + suffix, function (callback) {
-      runSequence(
-         'lint' + suffix,
-         'gen' + suffix, callback);
-   });
-}
-standardTsProject('', '.');
+   return tsProject.src()
+      .pipe(sourcemaps.init())
+      .pipe(tsProject()).js
+      .pipe(sourcemaps.write('.', { sourceRoot: '.' }))
+      .pipe(cleanDest(buildDir))
+      .pipe(gulp.dest(buildDir));
+});
+gulp.task('build', function (callback) {
+   runSequence('lint', 'gen', callback);
+});
 
 // ========
 // ======== TEST
@@ -58,27 +44,25 @@ standardTsProject('', '.');
 
 gulp.task('test-only', function () {
    return gulp.src('./dist/spec/**/*.js')
-      .pipe(jasmine());
+      .pipe(jasmine({ reporter: new MyReporter(srcDir) }));
 });
 gulp.task('test', function (callback) {
-   runSequence(
-      'build',
-      'test-only', callback);
+   runSequence('build', 'test-only', callback);
 });
 
 // ========
 // ======== DEFAULT
 // ========
 gulp.task('default', function () {
-   var INDENT = "   ";
+   var INDENT = '   ';
    function log(indentation, msg) {
-      var totalIndentation = "";
+      var totalIndentation = '';
       for (var i = 0; i < indentation; i++) {
          totalIndentation += INDENT;
       }
       console.log(totalIndentation + msg);
    }
-   log(0, "There is no default task. The available tasks are:");
-   log(1, "build: build main and spec");
-   log(1, "test: build main and spec and only if it succeeds, run the tests");
+   log(0, 'There is no default task. The available tasks are:');
+   log(1, 'build: build main and spec');
+   log(1, 'test: build main and spec and only if it succeeds, run the tests');
 });

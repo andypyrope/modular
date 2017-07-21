@@ -1,12 +1,15 @@
-import { XmlObjectBuildingError } from "./XmlObjectBuildingError";
-import { XmlObject } from "./../XmlObject";
+import { XmlObjectError } from "./XmlObjectError";
 import { FormattedString } from "./../util/FormattedString";
 
-export class ExpectedSingleChildError extends XmlObjectBuildingError {
-   constructor(childType: string, actualCount: number, source: XmlObject) {
-      super(new FormattedString(
-         "Expected one child of type '{0}', but found {1} in XML object: {2}",
-         childType, actualCount.toString(), source.identification()).toNative());
+export class ExpectedSingleChildError extends XmlObjectError {
+   constructor(childType: string, actualCount: number, xmlObjectLocation: string) {
+      const message: string = new FormattedString(
+         "Expected one child of type '{0}', but found {1}",
+         childType, actualCount.toString()
+      ).toNative();
+
+      super(message, xmlObjectLocation);
+
       this.resetPrototype(ExpectedSingleChildError);
    }
 }

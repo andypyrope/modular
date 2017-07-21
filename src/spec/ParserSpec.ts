@@ -1,7 +1,7 @@
 describe("Test", (): void => {
-    beforeEach((): void => {
-    });
+   beforeEach((): void => {
+   });
 
-    it("does something", (): void => {
-    });
+   it("does something", (): void => {
+   });
 });

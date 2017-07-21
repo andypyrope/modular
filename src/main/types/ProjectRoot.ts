@@ -1,32 +1,31 @@
-import { NotEmpty, ValidateNested } from "validator.ts/decorator/Validation";
-import { LibModule } from "./LibModule";
-import { PageModule } from "./PageModule";
-import { XmlObjectBase } from "./XmlObjectBase";
+import { Directory } from "./Directory";
+import { XmlObjectBase } from "./base/XmlObjectBase";
+import { NotEmptyAssertion } from "./../assertions/NotEmptyAssertion";
 
+/**
+ * The project root. It contains all the default configurations for all modules as well
+ * as the modules themselves. It should be the output of the Parser.
+ *
+ * @export
+ * @class ProjectRoot
+ * @extends {XmlObjectBase}
+ */
 export class ProjectRoot extends XmlObjectBase {
-   @NotEmpty()
    webpackFile: string;
-
-   @NotEmpty()
    tsFolder: string;
-
-   @NotEmpty()
    stylesFolder: string;
 
-   @ValidateNested()
-   libModules: LibModule[];
-
-   @ValidateNested()
-   pageModules: PageModule[];
+   rootDirectory: Directory;
 
    protected initialize(): void {
-      this.webpackFile = this.getAttribute("webpackFile");
-      this.tsFolder = this.getAttribute("tsFolder");
-      this.stylesFolder = this.getAttribute("stylesFolder");
+      this.webpackFile =
+         this.data.getAttribute("webpackFile", [new NotEmptyAssertion()]);
 
-      this.libModules = this.getChildren<LibModule>(LibModule);
-      this.pageModules = this.getChildren<PageModule>(PageModule);
+      this.tsFolder = this.data.getAttribute("tsFolder", [new NotEmptyAssertion()]);
+
+      this.stylesFolder =
+         this.data.getAttribute("stylesFolder", [new NotEmptyAssertion()]);
+
+      this.rootDirectory = this.instantiateChild<Directory>(Directory);
    }
-
-
 }

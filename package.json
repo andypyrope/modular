@@ -1,6 +1,6 @@
 {
   "name": "@alalev/modular",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Just a library for reading data about modules. It's meant to help me with my own project, so it's probably not useful to anyone else.",
   "main": "index.js",
   "scripts": {

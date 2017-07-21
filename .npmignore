@@ -1,5 +1,10 @@
-test
+node_modules
+resources
 src
-.vscode
-tslint.json
+typings
+gulpfile.js
+MyReporter.js
 tsconfig.json
+tslint.json
+typings.json
+.js.map

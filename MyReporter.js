@@ -12,8 +12,10 @@ var COLOUR_BLINK = '\x1b[5m';
 function MyReporter(srcDir) {
    this.srcDir = srcDir;
    this.failedSpecs = 0;
+   this.failedE2eTests = 0;
    this.specsToPrint = [];
    this.specsRun = 0;
+   this.e2eTestsRun = 0;
    this.totalSpecsDefined = undefined;
    this.lastPrintedPercentile = 0;
 }
@@ -76,7 +78,7 @@ function findSpecLocation(fileName, srcDir, specName) {
       }
    }
 
-   if (specparts[specParts.length - 1].indexOf('THEN') > -1) {
+   if (specParts[specParts.length - 1].indexOf('THEN') > -1) {
       // Split the last spec part, which must contain "THEN"
       specParts = specParts
          .slice(0, specParts.length - 1)
@@ -110,21 +112,30 @@ MyReporter.prototype.specDone = function (result) {
    }
    this.specsRun++;
 
+   var isE2e = (result.fullName.substr(0, 5) === '[E2E]');
+   if (isE2e) {
+      this.e2eTestsRun++;
+   }
+
    if (result.failedExpectations.length) {
       this.failedSpecs++;
+      if (isE2e) {
+         this.failedE2eTests++;
+      }
 
-      var specFile = result.fullName.match(/^[a-zA-Z]*/) + 'Spec.ts';
+      var specFile = isE2e
+         ? result.fullName.substr(6).match(/^[a-zA-Z]*/) + '.ts'
+         : result.fullName.match(/^[a-zA-Z]*/) + 'Spec.ts';
       function inBlue(str) {
          return COLOUR_BLUE + str + COLOUR_RESET;
       }
-      var specToPrint = {
+      this.specsToPrint.push({
          name: result.description,
          fullName: result.fullName,
          file: specFile,
          errors: result.failedExpectations,
          location: findSpecLocation(specFile, this.srcDir, result.fullName)
-      };
-      this.specsToPrint.push(specToPrint);
+      });
    }
    var percent = Math.round((this.specsRun / this.totalSpecsDefined) * 100);
    if (percent - this.lastPrintedPercentile > 3) {
@@ -160,11 +171,15 @@ function printSpecs(specs) {
 }
 
 MyReporter.prototype.jasmineDone = function () {
+   console.log('Non-E2E specs run: ' + (this.specsRun - this.e2eTestsRun));
+   console.log('E2E tests run: ' + this.e2eTestsRun);
+
    if (this.failedSpecs === 0) {
       console.log('All ' + this.specsRun + ' tests have passed!');
    } else {
       console.log('A total of ' + this.failedSpecs + ' out of ' + this.specsRun + ' (' +
          Math.round(100 * this.failedSpecs / this.specsRun) + '%) specs have failed');
+      console.log('Among them, ' + this.failedE2eTests + ' are E2E tests');
 
       printSpecs(this.specsToPrint);
    }
@@ -177,7 +192,7 @@ MyReporter.prototype.jasmineDone = function () {
       // Heuristics
       var warning = null;
       if (this.specsRun < this.totalSpecsDefined / 2) {
-         console.warn('Judging by how little specs have been run, they must be FOCUSED');
+         console.warn('Judging by how few specs have been run, they must be FOCUSED');
          warning = 'Please do not submit any focused tests!';
       } else {
          console.warn('Judging by how many specs have been run, the others must be ' +

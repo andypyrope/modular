@@ -33,6 +33,10 @@ describe("Parser", (): void => {
       it("returns the result", function (): void {
          expect(this.callParseSync).not.toThrow();
          expect(this.callParseSync()).toBe(this.parseResult);
+
+         const PARSE_XML_ARGS: any[] = (this.spyOnParse as jasmine.Spy).calls.argsFor(0);
+         expect(PARSE_XML_ARGS[0]).toBe(this.fileContents);
+         expect(PARSE_XML_ARGS[1]).toBeDefined();
       });
 
       describe("WHEN ParseUtil throws while reading the file", (): void => {

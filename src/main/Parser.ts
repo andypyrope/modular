@@ -9,6 +9,7 @@ import { ParseUtil } from "./util/ParseUtil";
  */
 export class Parser {
    private static readonly PARSE_OPTIONS: { [optionKey: string]: any } = {
+      "explicitCharkey": true,
       "explicitChildren": true,
       "normalize": true,
       "trim": true

@@ -1,0 +1,7 @@
+<ProjectRoot webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
+   <Directory name="someDirectory">
+      <Module id="some-module">
+         <Dependency>other-module</Dependency>
+      </Module>
+   </Directory>
+</ProjectRoot>

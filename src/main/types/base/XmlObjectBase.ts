@@ -1,6 +1,7 @@
 import { AdaptedData } from "./../../core/AdaptedData";
 import { XmlObject } from "./../../XmlObject";
 import { XmlObjectBuilder } from "./../../util/XmlObjectBuilder";
+import { XmlObjectClass } from "./../../core/XmlObjectClass";
 
 /**
  * The base abstract class all concrete XML object classes should extend.
@@ -30,16 +31,16 @@ export abstract class XmlObjectBase implements XmlObject {
       }
    }
 
-   protected instantiateChild<T extends XmlObject>(type: any): T {
-      let tagname: string = type.name;
+   protected instantiateChild<T extends XmlObject>(clazz: XmlObjectClass<T>): T {
+      let tagname: string = (clazz as any).name;
       return XmlObjectBuilder
-         .instantiate<T>(this.data.getSingleChild(tagname), type);
+         .instantiate<T>(this.data.getSingleChild(tagname), clazz);
    }
 
-   protected instantiateChildren<T extends XmlObject>(type: any): T[] {
-      let tagname: string = type.name;
+   protected instantiateChildren<T extends XmlObject>(clazz: XmlObjectClass<T>): T[] {
+      let tagname: string = (clazz as any).name;
       return XmlObjectBuilder
-         .instantiateMultiple<T>(this.data.getChildren(tagname), type);
+         .instantiateMultiple<T>(this.data.getChildren(tagname), clazz);
    }
 
    protected abstract initialize(): void;

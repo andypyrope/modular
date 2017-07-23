@@ -3,6 +3,7 @@ var fs = require('fs');
 
 var COLOUR_BLUE = '\x1b[34m';
 var COLOUR_RED = '\x1b[31m';
+var COLOUR_GREEN = '\x1b[32m';
 var COLOUR_YELLOW = '\x1b[33m';
 var COLOUR_RESET = '\x1b[0m';
 var COLOUR_CYAN = '\x1b[36m';
@@ -175,10 +176,13 @@ MyReporter.prototype.jasmineDone = function () {
    console.log('E2E tests run: ' + this.e2eTestsRun);
 
    if (this.failedSpecs === 0) {
-      console.log('All ' + this.specsRun + ' tests have passed!');
+      console.log(COLOUR_GREEN +
+         '[SUCCESS] All ' + this.specsRun + ' tests have passed.' + COLOUR_RESET);
    } else {
-      console.log('A total of ' + this.failedSpecs + ' out of ' + this.specsRun + ' (' +
-         Math.round(100 * this.failedSpecs / this.specsRun) + '%) specs have failed');
+      console.log(COLOUR_RED +
+         '[FAILURE] A total of ' + this.failedSpecs + ' out of ' + this.specsRun + ' (' +
+         Math.round(100 * this.failedSpecs / this.specsRun) + '%) specs have failed' +
+         COLOUR_RESET);
       console.log('Among them, ' + this.failedE2eTests + ' are E2E tests');
 
       printSpecs(this.specsToPrint);

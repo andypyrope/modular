@@ -28,6 +28,11 @@ MyReporter.prototype.jasmineStarted = function (suiteInfo) {
    this.totalSpecsDefined = suiteInfo.totalSpecsDefined;
 };
 
+function potentiallyIncorrectSpec(specName, fileName) {
+   console.warn('The spec pattern may not have been followed for spec "' + specName +
+      '" in file ' + filePath);
+}
+
 function findSpecLocation(fileName, srcDir, specName) {
    var files = find.fileSync(fileName, srcDir);
    if (files.length === 0) {
@@ -46,23 +51,45 @@ function findSpecLocation(fileName, srcDir, specName) {
       .split('\n');
 
    var specParts = specName.split('WHEN');
-   if (specParts[0].indexOf('#') !== -1) {
+   if (specParts[0].indexOf('#') > -1) {
       // If the first part contains a '#', then there must also be #methodName in the
       // full spec name, so it should be split there as well
       specParts = specParts[0]
          .split('#')
          .concat(specParts.slice(1));
+
+      // If the part with '#' contains more than one word separated with an interval
+      // then there should be a spec right under it without a 'THEN' statement
+      var sharp = specParts[1].trim(); // #methodName does something
+      if (sharp.indexOf(' ') > -1) {
+         if (specParts.length > 2) {
+            // It is not allowed for a spec to have "WHEN" in its message, for example:
+            // ClassName #methodName
+            potentiallyIncorrectSpec(specName, fileName);
+         }
+
+         specParts = [
+            specParts[0], // ClassName
+            sharp.substr(0, sharp.indexOf(' ')), // #methodName
+            sharp.substr(sharp.indexOf(' ') + 1) // does something
+         ].concat(specParts.slice(2)); // this should be empty; adding it just in case
+      }
    }
-   // Split the last spec part, which must contain "THEN"
-   specParts = specParts
-      .slice(0, specParts.length - 1)
-      .concat(specParts[specParts.length - 1].split('THEN'));
+
+   if (specparts[specParts.length - 1].indexOf('THEN') > -1) {
+      // Split the last spec part, which must contain "THEN"
+      specParts = specParts
+         .slice(0, specParts.length - 1)
+         .concat(specParts[specParts.length - 1].split('THEN'));
+   } else {
+      potentiallyIncorrectSpec(specName, fileName);
+   }
 
    // Return the first position in the file before which all parts have been found
    var currentPart = 0;
    for (var i = 0; i < fileLines.length; i++) {
       var foundAt = fileLines[i].indexOf(specParts[currentPart].trim());
-      if (foundAt !== -1) {
+      if (foundAt > -1) {
          currentPart++;
 
          if (currentPart === specParts.length) {
@@ -71,9 +98,10 @@ function findSpecLocation(fileName, srcDir, specName) {
       }
    }
    // Failure
-   console.warn('Only found ' + currentPart + ' parts of the spec ' + specFile);
+   console.warn('Only found ' + currentPart + ' parts of the spec ' + specName +
+      ' in file ' + filePath + ':');
    console.warn(specParts.slice(0, currentPart).join(' | '));
-   return null;
+   return [filePath, 1, 1].join(':');
 };
 
 MyReporter.prototype.specDone = function (result) {

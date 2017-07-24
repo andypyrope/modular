@@ -8,7 +8,7 @@ import * as path from "path";
 describe("Module", () => {
    beforeEach(function (): void {
       MockUtil.initialize();
-      this.id = "lib-module-name1";
+      this.id = "lib-module-name-1";
       this.dependencies = [new Dependency(null), new Dependency(null)];
 
       this.build = (): Module => {

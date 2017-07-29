@@ -1,8 +1,9 @@
 {
    "compilerOptions": {
       "module": "commonjs",
+      "declaration": true,
       "noImplicitAny": true,
-      "removeComments": true,
+      "removeComments": false,
       "preserveConstEnums": true,
       "experimentalDecorators": true,
       "sourceMap": true,

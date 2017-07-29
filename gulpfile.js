@@ -10,6 +10,7 @@ var gulpIgnore = require('gulp-ignore');
 var MyReporter = require('./MyReporter');
 const del = require('del');
 const fs = require('fs');
+const merge = require('merge2');
 
 // ========
 // ======== BUILD
@@ -43,14 +44,21 @@ gulp.task('rename', function () {
 
 gulp.task('gen', function () {
    var tsProject = typescript.createProject(path.join('.', 'tsconfig.json'), {
+      declaration: true,
       typescript: require('typescript')
    });
-   return tsProject.src()
+   var result = tsProject.src()
       .pipe(sourcemaps.init())
-      .pipe(tsProject()).js
-      .pipe(sourcemaps.write('.', { sourceRoot: '.' }))
-      .pipe(cleanDest(TMP_BUILD_DIR))
-      .pipe(gulp.dest(TMP_BUILD_DIR));
+      .pipe(tsProject());
+
+   return merge([
+      result.js
+         .pipe(sourcemaps.write('.', { sourceRoot: '.' }))
+         .pipe(cleanDest(TMP_BUILD_DIR))
+         .pipe(gulp.dest(TMP_BUILD_DIR)),
+      result.dts
+         .pipe(gulp.dest(TMP_BUILD_DIR))
+   ]);
 });
 gulp.task('build', function (callback) {
    runSequence('lint', 'gen', 'clean', 'rename', callback);

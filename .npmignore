@@ -1,10 +1,10 @@
+.js.map
+gulpfile.js
+MyReporter.js
 node_modules
 resources
 src
-typings
-gulpfile.js
-MyReporter.js
 tsconfig.json
 tslint.json
+typings
 typings.json
-.js.map

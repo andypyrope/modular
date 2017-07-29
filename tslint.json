@@ -57,7 +57,9 @@
       "no-unused-variable": [
          false,
          "check-parameters",
-         {"ignore-pattern": "^x_"}
+         {
+            "ignore-pattern": "^x_"
+         }
       ],
       "typedef": [
          true,

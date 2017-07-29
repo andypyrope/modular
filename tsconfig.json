@@ -1,14 +1,14 @@
 {
    "compilerOptions": {
-      "module": "commonjs",
       "declaration": true,
-      "noImplicitAny": true,
-      "removeComments": false,
-      "preserveConstEnums": true,
       "experimentalDecorators": true,
-      "sourceMap": true,
+      "module": "commonjs",
+      "noImplicitAny": true,
       "outDir": "./dist",
-      "rootDir": "./src"
+      "preserveConstEnums": true,
+      "removeComments": false,
+      "rootDir": "./src",
+      "sourceMap": true
    },
    "include": [
       "./src/**/*.ts",

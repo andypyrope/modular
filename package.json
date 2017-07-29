@@ -2,8 +2,8 @@
   "name": "@alalev/modular",
   "version": "0.3.0",
   "description": "Just a library for reading data about modules. It's meant to help me with my own project, so it's probably not useful to anyone else.",
-  "main": "./dist/Parser.js",
-  "typings": "./dist/Parser.d.ts",
+  "main": "./index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "build": "gulp build",
     "test": "gulp test"
@@ -28,7 +28,9 @@
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^3.2.2",
     "del": "^3.0.0",
+    "dts-bundle": "^0.7.3",
     "find": "^0.2.7",
     "gulp": "^3.9.1",
     "gulp-clean-dest": "^0.2.0",
@@ -40,6 +42,8 @@
     "merge2": "^1.1.0",
     "run-sequence": "^2.0.0",
     "tslint": "^5.5.0",
-    "typescript": "^2.4.1"
+    "typescript": "^2.4.1",
+    "webpack": "^3.4.1",
+    "webpack-stream": "^3.2.0"
   }
 }

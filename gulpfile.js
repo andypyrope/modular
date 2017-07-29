@@ -7,10 +7,11 @@ var runSequence = require('run-sequence');
 var tslint = require('gulp-tslint');
 var cleanDest = require('gulp-clean-dest');
 var gulpIgnore = require('gulp-ignore');
-var MyReporter = require('./MyReporter');
+var MyReporter = require('./resources/MyReporter');
 const del = require('del');
 const fs = require('fs');
 const merge = require('merge2');
+const webpack = require('webpack-stream');
 
 // ========
 // ======== BUILD
@@ -60,8 +61,15 @@ gulp.task('gen', function () {
          .pipe(gulp.dest(TMP_BUILD_DIR))
    ]);
 });
+
+gulp.task('gen-publish', function () {
+   return gulp.src(CWD)
+      .pipe(webpack(require('./webpack.config.js')))
+      .pipe(gulp.dest(CWD));
+});
+
 gulp.task('build', function (callback) {
-   runSequence('lint', 'gen', 'clean', 'rename', callback);
+   runSequence('lint', 'gen', 'clean', 'rename', 'gen-publish', callback);
 });
 
 // ========

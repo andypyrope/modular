@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const yargs = require('yargs');
 
-const LIBRARY_NAME = 'modular';
+const LIBRARY_NAME = '@alalev/modular';
 const plugins = [
    new DtsBundlePlugin()
 ];

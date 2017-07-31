@@ -2,7 +2,6 @@
 dist
 gulpfile.js
 MyReporter.js
-node_modules
 resources
 src
 tsconfig.json

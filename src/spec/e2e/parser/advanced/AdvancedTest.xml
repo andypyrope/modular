@@ -1,22 +1,19 @@
-<ProjectRoot webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
+<?xml version="1.0"?>
+<ProjectRoot
+   xmlns="https://github.com/andypyrope/modular" webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
    <Directory name="someDirectory">
       <Directory name="dir1">
-         <Module id="module-11">
-         </Module>
+         <Directory name="dir11"/>
+         <Module id="module-11"/>
          <Module id="module-12">
             <Dependency>module-11</Dependency>
          </Module>
-
-         <Directory name="dir11">
-         </Directory>
       </Directory>
-      <Directory name="dir2">
-      </Directory>
+      <Directory name="dir2"/>
       <Module id="module-1">
          <Dependency>module-2</Dependency>
          <Dependency>module-11</Dependency>
       </Module>
-      <Module id="module-2">
-      </Module>
+      <Module id="module-2"/>
    </Directory>
 </ProjectRoot>

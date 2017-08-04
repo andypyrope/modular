@@ -1,4 +1,6 @@
-<ProjectRoot webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
+<?xml version="1.0"?>
+<ProjectRoot
+   xmlns="https://github.com/andypyrope/modular" webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
    <Directory name="someDirectory">
       <Module id="some-module">
          <Dependency>other-module</Dependency>

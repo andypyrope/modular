@@ -1,6 +1,8 @@
 import { Directory } from "./Directory";
 import { XmlObjectBase } from "./base/XmlObjectBase";
 import { NotEmptyAssertion } from "./../assertions/NotEmptyAssertion";
+import { Module } from "./Module";
+import { DuplicateModuleIdError } from "./../err/DuplicateModuleIdError";
 
 /**
  * The project root. It contains all the default configurations for all modules as well
@@ -27,5 +29,13 @@ export class ProjectRoot extends XmlObjectBase {
          this.data.getAttribute("stylesFolder", [new NotEmptyAssertion()]);
 
       this.rootDirectory = this.instantiateChild<Directory>(Directory);
+
+      const ALL_MODULES: {[id: string]: Module} = {};
+      for (let module of this.rootDirectory.allModules) {
+         if (ALL_MODULES[module.id]) {
+            throw new DuplicateModuleIdError(module.id);
+         }
+         ALL_MODULES[module.id] = module;
+      }
    }
 }

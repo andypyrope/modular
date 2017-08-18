@@ -3,11 +3,13 @@ import { Directory } from "./../../main/types/Directory";
 import { ProjectRoot } from "./../../main/types/ProjectRoot";
 import { AdaptedDataFactory } from "./../mock/AdaptedDataFactory";
 import { AdaptedData } from "./../../main/core/AdaptedData";
+import { Module } from "./../../main/types/Module";
 
 describe("ProjectRoot", () => {
    beforeEach(function (): void {
       MockUtil.initialize();
       this.rootDirectory = new Directory(null);
+      this.rootDirectory.allModules = [];
       this.webpackFile = "wp-config.json";
       this.tsFolder = "ts";
       this.stylesFolder = "styles";
@@ -32,6 +34,28 @@ describe("ProjectRoot", () => {
          expect(testObj.stylesFolder).toBe(this.stylesFolder);
 
          expect(testObj.rootDirectory).toBe(this.rootDirectory);
+      });
+   });
+
+   describe("WHEN its root directory contains two modules with the same ID", () => {
+      it("THEN it throws an error with the correct message upon initialization", function (): void {
+         this.rootDirectory.allModules = [new Module(null), new Module(null)];
+         this.rootDirectory.allModules[0].id = this.rootDirectory.allModules[1].id = "a";
+         expect(this.build).toThrowError("There is more than one module with ID 'a'");
+      });
+   });
+
+   describe("WHEN its root directory contains many modules with different IDs", () => {
+      it("THEN it does not throw an error upon initialization", function (): void {
+         this.rootDirectory.allModules = [
+            new Module(null), new Module(null),
+            new Module(null)
+         ];
+
+         this.rootDirectory.allModules[0].id = "a";
+         this.rootDirectory.allModules[1].id = "bracada";
+         this.rootDirectory.allModules[2].id = "bra";
+         expect(this.build).not.toThrow();
       });
    });
 

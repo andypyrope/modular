@@ -32,8 +32,6 @@ describe("ProjectRoot", () => {
          expect(testObj.webpackFile).toBe(this.webpackFile);
          expect(testObj.tsFolder).toBe(this.tsFolder);
          expect(testObj.stylesFolder).toBe(this.stylesFolder);
-
-         expect(testObj.rootDirectory).toBe(this.rootDirectory);
       });
    });
 

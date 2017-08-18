@@ -17,7 +17,7 @@ export class ProjectRoot extends XmlObjectBase {
    tsFolder: string;
    stylesFolder: string;
 
-   rootDirectory: Directory;
+   private rootDirectory: Directory;
 
    protected initialize(): void {
       this.webpackFile =

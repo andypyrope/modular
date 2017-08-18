@@ -4,16 +4,16 @@
    <Directory name="someDirectory">
       <Directory name="dir1">
          <Directory name="dir11"/>
-         <Module id="module-11"/>
-         <Module id="module-12">
+         <Module id="module-11" type="ui"/>
+         <Module id="module-12" type="ui">
             <Dependency>module-11</Dependency>
          </Module>
       </Directory>
       <Directory name="dir2"/>
-      <Module id="module-1">
+      <Module id="module-1" type="contract">
          <Dependency>module-2</Dependency>
          <Dependency>module-11</Dependency>
       </Module>
-      <Module id="module-2"/>
+      <Module id="module-2" type="server"/>
    </Directory>
 </ProjectRoot>

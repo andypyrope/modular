@@ -8,6 +8,7 @@
          <xs:element name="Dependency" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute name="id" type="xs:string"/>
+      <xs:attribute name="type" type="xs:string"/>
    </xs:complexType>
    <!-- Directory -->
    <xs:complexType name="Directory">

@@ -2,9 +2,9 @@
 <ProjectRoot
    xmlns="https://github.com/andypyrope/modular" webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
    <Directory name="someDirectory">
-      <Module id="duplicate-id">
+      <Module id="duplicate-id" type="ui">
          <Dependency>other-module</Dependency>
       </Module>
-      <Module id="duplicate-id"></Module>
+      <Module id="duplicate-id" type="ui"/>
    </Directory>
 </ProjectRoot>

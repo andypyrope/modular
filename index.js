@@ -60,18 +60,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	exports.__esModule = true;
 	var Parser_1 = __webpack_require__(1);
+	exports.Parser = Parser_1.Parser;
+	var ProjectRoot_1 = __webpack_require__(170);
+	exports.ProjectRoot = ProjectRoot_1.ProjectRoot;
 	__export(__webpack_require__(189));
-	/**
-	 * Parse the file at the specified path synchronously. An error is thrown on failure.
-	 *
-	 * @export
-	 * @param {string} path The path to the XML file
-	 * @returns {ProjectRoot} The project root corresponding to the XML file
-	 */
-	function parseSync(path) {
-	    return Parser_1.Parser.parseSync(path);
-	}
-	exports.parseSync = parseSync;
 
 
 /***/ }),

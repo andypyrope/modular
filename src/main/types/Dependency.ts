@@ -16,8 +16,4 @@ export class Dependency extends XmlObjectBase {
    protected initialize(): void {
       this.id = this.data.getContent([new KebabCaseAssertion()]);
    }
-
-   public getId(): string {
-      return this.id;
-   }
 }

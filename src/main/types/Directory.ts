@@ -2,6 +2,7 @@ import { XmlObjectBase } from "./base/XmlObjectBase";
 import { Module } from "./Module";
 import * as path from "path";
 import { NotEmptyAssertion } from "./../assertions/NotEmptyAssertion";
+import { DuplicateModuleIdError } from "./../err/DuplicateModuleIdError";
 
 /**
  * Represents a real-life directory in the file system, which can contain subdirectories
@@ -14,23 +15,33 @@ import { NotEmptyAssertion } from "./../assertions/NotEmptyAssertion";
 export class Directory extends XmlObjectBase {
    private path: string;
    private name: string;
-   private modules: Module[];
+   private directModules: Module[];
+   private directories: Directory[];
 
-   directories: Directory[];
-
-   // Recursively obtained
-   allModules: Module[];
+   modules: {[id: string]: Module};
 
    protected initialize(): void {
       this.name = this.data.getAttribute("name", [new NotEmptyAssertion()]);
 
       this.directories = this.instantiateChildren<Directory>(Directory);
-      this.modules = this.instantiateChildren<Module>(Module);
+      this.directModules = this.instantiateChildren<Module>(Module);
 
-      this.allModules = this.modules.slice();
-      for (let directory of this.directories) {
-         this.allModules = this.allModules.concat(directory.allModules);
+      this.modules = {};
+      for (let module of this.directModules) {
+         this.addModule(module);
       }
+      for (let directory of this.directories) {
+         for (let id in directory.modules) {
+            this.addModule(directory.modules[id]);
+         }
+      }
+   }
+
+   private addModule(module: Module): void {
+      if (this.modules[module.id]) {
+         throw new DuplicateModuleIdError(module.id, this.name);
+      }
+      this.modules[module.id] = module;
    }
 
    public setParentDirectory(parentDirectory: string): void {
@@ -38,8 +49,8 @@ export class Directory extends XmlObjectBase {
       for (let directory of this.directories) {
          directory.setParentDirectory(this.path);
       }
-      for (let currentModule of this.modules) {
-         currentModule.setParentDirectory(this.path);
+      for (let module of this.directModules) {
+         module.setParentDirectory(this.path);
       }
    }
 }

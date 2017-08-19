@@ -10,10 +10,10 @@
          </Module>
       </Directory>
       <Directory name="dir2"/>
-      <Module id="module-1" type="contract">
+      <Module id="module-1" type="ui">
          <Dependency>module-2</Dependency>
          <Dependency>module-11</Dependency>
       </Module>
-      <Module id="module-2" type="server"/>
+      <Module id="module-2" type="contract"/>
    </Directory>
 </ProjectRoot>

@@ -8,8 +8,9 @@ import { ErrorBase } from "./base/ErrorBase";
  * @extends {ErrorBase}
  */
 export class DuplicateModuleIdError extends ErrorBase {
-   constructor(moduleId: string) {
-      super("There is more than one module with ID '" + moduleId + "'");
+   constructor(moduleId: string, directoryName: string) {
+      super("There is more than one module with ID '" + moduleId + "' in directory '" +
+         directoryName + "'");
       this.resetPrototype(DuplicateModuleIdError);
    }
 }

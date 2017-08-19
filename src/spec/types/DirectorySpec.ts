@@ -14,8 +14,11 @@ describe("Directory", () => {
 
       this.setParentDirectoryCalledWith = [];
 
+      let moduleIndex: number = 1;
+
       this.mockModule = (): Module => {
          let currentModule: Module = new Module(null);
+         currentModule.id = "module-" + (moduleIndex++);
          spyOn(currentModule, "setParentDirectory").and.callFake(
             (directory: string): void => {
                this.setParentDirectoryCalledWith.push(directory);
@@ -32,8 +35,7 @@ describe("Directory", () => {
       it("THEN everything goes well", function (): void {
          let testObj: Directory = new Directory(new AdaptedDataFactory(this.factory)
             .build());
-         expect(testObj.allModules.length).toBe(0);
-         expect(testObj.directories.length).toBe(0);
+         expect(Object.keys(testObj.modules).length).toBe(0);
       });
    });
 
@@ -46,10 +48,24 @@ describe("Directory", () => {
 
    describe("WHEN its name is empty", () => {
       it("THEN it throws an error", function (): void {
-         const data: AdaptedData = new AdaptedDataFactory(this.factory)
+         const DATA: AdaptedData = new AdaptedDataFactory(this.factory)
             .attr("name", "")
             .build();
-         expect((): void => { new Directory(data); }).toThrow();
+         expect((): void => { new Directory(DATA); }).toThrow();
+      });
+   });
+
+   describe("WHEN it has two modules with the same ID", () => {
+      it("THEN it throws an error", function (): void {
+         const MODULE_1: Module = this.mockModule();
+         const MODULE_2: Module = this.mockModule();
+         MODULE_2.id = MODULE_1.id;
+
+         const DATA: AdaptedData = new AdaptedDataFactory(this.factory)
+            .attr("name", "")
+            .children("Module", MockUtil.registerAll([MODULE_1, MODULE_2]))
+            .build();
+         expect((): void => { new Directory(DATA); }).toThrow();
       });
    });
 
@@ -61,7 +77,7 @@ describe("Directory", () => {
 
       it("THEN it contains them", function (): void {
          let testObj: Directory = new Directory(this.factory.build());
-         expect(testObj.allModules.length).toBe(2);
+         expect(Object.keys(testObj.modules).length).toBe(2);
       });
 
       describe("WHEN it has two child directories with two child modules each", () => {
@@ -70,21 +86,18 @@ describe("Directory", () => {
                .attr("name", "dir1")
                .children("Module", this.registerTwoModules())
                .build());
-            expect(dir1.allModules.length).toBe(2);
+            expect(Object.keys(dir1.modules).length).toBe(2);
 
             let dir2: Directory = new Directory(new AdaptedDataFactory()
                .attr("name", "dir2")
                .children("Module", this.registerTwoModules())
                .build());
-            expect(dir2.allModules.length).toBe(2);
+            expect(Object.keys(dir2.modules).length).toBe(2);
 
             let testObj: Directory = new Directory(new AdaptedDataFactory(this.factory)
                .children("Directory", MockUtil.registerAll([dir1, dir2]))
                .build());
-            expect(testObj.directories.length).toBe(2);
-            expect(testObj.directories[0]).toBe(dir1);
-            expect(testObj.directories[1]).toBe(dir2);
-            expect(testObj.allModules.length).toBe(6);
+            expect(Object.keys(testObj.modules).length).toBe(6);
          });
       });
    });

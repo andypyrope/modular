@@ -5,5 +5,6 @@
       <Module id="some-module" type="ui">
          <Dependency>other-module</Dependency>
       </Module>
+      <Module id="other-module" type="contract"/>
    </Directory>
 </ProjectRoot>

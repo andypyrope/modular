@@ -10,8 +10,7 @@ describe("[E2E] SimpleTest", (): void => {
             .replace("dist", "src")
             .replace(/\.js$/, ".xml");
 
-         expect((): ProjectRoot => { return Parser.parseSync(PATH_TO_XML); })
-            .not.toThrow();
+         Parser.parseSync(PATH_TO_XML);
       });
    });
 });

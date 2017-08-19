@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ProjectRoot
+   xmlns="https://github.com/andypyrope/modular" webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
+   <Directory name="someDirectory">
+      <Module id="module-1" type="ui">
+         <Dependency>module-2</Dependency>
+      </Module>
+      <Module id="module-2" type="ui">
+         <Dependency>module-3</Dependency>
+      </Module>
+      <Module id="module-3" type="ui">
+         <Dependency>module-1</Dependency>
+      </Module>
+   </Directory>
+</ProjectRoot>

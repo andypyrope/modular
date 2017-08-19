@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ProjectRoot
+   xmlns="https://github.com/andypyrope/modular" webpackFile="webpack-file.json" tsFolder="src" stylesFolder="css">
+   <Directory name="rootDirectory">
+      <Directory name="someDirectory">
+         <Module id="module-1" type="server">
+            <Dependency>module-3</Dependency>
+         </Module>
+         <Module id="module-2" type="ui">
+            <Dependency>module-3</Dependency>
+            <Dependency>module-4</Dependency>
+         </Module>
+      </Directory>
+      <Directory name="someOtherDirectory">
+         <Directory name="someThirdDirectory">
+            <Module id="module-3" type="contract"/>
+            <Module id="module-4" type="ui">
+               <Dependency>module-5</Dependency>
+               <Dependency>module-6</Dependency>
+            </Module>
+         </Directory>
+         <Module id="module-5" type="contract">
+            <Dependency>module-6</Dependency>
+         </Module>
+      </Directory>
+      <Module id="module-6" type="contract"/>
+   </Directory>
+</ProjectRoot>

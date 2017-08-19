@@ -116,4 +116,28 @@ describe("ProjectRoot", () => {
          expect(() => { new ProjectRoot(undefined); }).not.toThrow();
       });
    });
+
+   describe("#getBuildOrder", () => {
+      it("returns the modules grouped and ordered correctly", function (): void {
+         (this.rootDirectory as Directory).modules = this.makeModules({
+            "module-1": [ModuleType.SERVER, ["module-3"]],
+            "module-2": [ModuleType.UI, ["module-3", "module-4"]],
+            "module-3": [ModuleType.CONTRACT, []],
+            "module-4": [ModuleType.UI, ["module-5", "module-6"]],
+            "module-5": [ModuleType.CONTRACT, ["module-6"]],
+            "module-6": [ModuleType.CONTRACT, []]
+         });
+         const testObj: ProjectRoot = this.build();
+         expect(testObj.getBuildOrder("module-1")).toEqual([["module-3"], ["module-1"]]);
+         expect(testObj.getBuildOrder("module-2")).toEqual([
+            ["module-6"], ["module-5"], ["module-3", "module-4"], ["module-2"]
+         ]);
+         expect(testObj.getBuildOrder("module-3")).toEqual([["module-3"]]);
+         expect(testObj.getBuildOrder("module-4")).toEqual([
+            ["module-6"], ["module-5"], ["module-4"]
+         ]);
+         expect(testObj.getBuildOrder("module-5")).toEqual([["module-6"], ["module-5"]]);
+         expect(testObj.getBuildOrder("module-6")).toEqual([["module-6"]]);
+      });
+   });
 });

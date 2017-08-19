@@ -31,7 +31,7 @@ MyReporter.prototype.jasmineStarted = function (suiteInfo) {
    this.totalSpecsDefined = suiteInfo.totalSpecsDefined;
 };
 
-function potentiallyIncorrectSpec(specName, fileName) {
+function potentiallyIncorrectSpec(specName, filePath) {
    console.warn('The spec pattern may not have been followed for spec "' + specName +
       '" in file ' + filePath);
 }
@@ -84,7 +84,7 @@ function findSpecLocation(fileName, srcDir, specName) {
       specParts = specParts
          .slice(0, specParts.length - 1)
          .concat(specParts[specParts.length - 1].split('THEN'));
-   } else {
+   } else if (specParts[specParts.length - 1].indexOf('WHEN') > -1) {
       potentiallyIncorrectSpec(specName, fileName);
    }
 

@@ -52,6 +52,16 @@ export class ProjectRoot extends XmlObjectBase {
       }
    }
 
+   public allModulesOfType(type: ModuleType): Module[] {
+      const result: Module[] = [];
+      for (let moduleId in this.modules) {
+         if (this.modules[moduleId].type === type) {
+            result.push(this.modules[moduleId]);
+         }
+      }
+      return result;
+   }
+
    public getBuildOrder(sourceModuleId: string): string[][] {
       const allModules: { [id: string]: Module } = {};
       const visited: { [moduleId: string]: true } = {};

@@ -117,6 +117,39 @@ describe("ProjectRoot", () => {
       });
    });
 
+   describe("#allModulesOfType", () => {
+      it("returns the modules of the specified type", function (): void {
+         (this.rootDirectory as Directory).modules = this.makeModules({
+            "module-1": [ModuleType.SERVER, []],
+            "module-2": [ModuleType.UI, []],
+            "module-3": [ModuleType.UI, []],
+            "module-4": [ModuleType.CONTRACT, []],
+            "module-5": [ModuleType.CONTRACT, []],
+            "module-6": [ModuleType.GROUP, []]
+         });
+
+         const getModuleIds: (modules: Module[]) => string[] =
+            (modules: Module[]): string[] => {
+               const result: string[] = [];
+               for (let module of modules) {
+                  result.push(module.id);
+               }
+               return result;
+            };
+
+         const testObj: ProjectRoot = this.build();
+
+         expect(getModuleIds(testObj.allModulesOfType(ModuleType.SERVER)))
+            .toEqual(["module-1"]);
+         expect(getModuleIds(testObj.allModulesOfType(ModuleType.UI)))
+            .toEqual(["module-2", "module-3"]);
+         expect(getModuleIds(testObj.allModulesOfType(ModuleType.CONTRACT)))
+            .toEqual(["module-4", "module-5"]);
+         expect(getModuleIds(testObj.allModulesOfType(ModuleType.GROUP)))
+            .toEqual(["module-6"]);
+      });
+   });
+
    describe("#getBuildOrder", () => {
       it("returns the modules grouped and ordered correctly", function (): void {
          (this.rootDirectory as Directory).modules = this.makeModules({

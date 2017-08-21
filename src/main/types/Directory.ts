@@ -50,7 +50,7 @@ export class Directory extends XmlObjectBase {
          directory.setParentDirectory(this.path);
       }
       for (let module of this.directModules) {
-         module.setParentDirectory(this.path);
+         module.directory = path.join(this.path, module.id);
       }
    }
 }

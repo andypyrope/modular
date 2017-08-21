@@ -66,28 +66,4 @@ describe("Module", () => {
          expect(this.build).toThrow();
       });
    });
-
-   describe("#setParentDirectory", () => {
-      describe("WHEN called with an absolute path", () => {
-         it("THEN joins the given parameter with its ID", function (): void {
-            let testObj: Module = this.build();
-            expect(testObj.directory).toBeUndefined();
-
-            const DIR: string = "/tmp/asd/test";
-            testObj.setParentDirectory(DIR);
-            expect(testObj.directory).toBe(path.join(DIR, this.id));
-         });
-      });
-
-      describe("WHEN called with a relative path", () => {
-         it("THEN joins the given parameter with its ID", function (): void {
-            let testObj: Module = this.build();
-            expect(testObj.directory).toBeUndefined();
-
-            const DIR: string = "./asd/test";
-            testObj.setParentDirectory(DIR);
-            expect(testObj.directory).toBe(path.join(DIR, this.id));
-         });
-      });
-   });
 });

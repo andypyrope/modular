@@ -12,17 +12,13 @@ describe("Directory", () => {
       this.factory = new AdaptedDataFactory()
          .attr("name", "dir-name");
 
-      this.setParentDirectoryCalledWith = [];
-
       let moduleIndex: number = 1;
+      this.mockedModules = [];
 
       this.mockModule = (): Module => {
          let currentModule: Module = new Module(null);
          currentModule.id = "module-" + (moduleIndex++);
-         spyOn(currentModule, "setParentDirectory").and.callFake(
-            (directory: string): void => {
-               this.setParentDirectoryCalledWith.push(directory);
-            });
+         this.mockedModules.push(currentModule);
          return currentModule;
       };
 
@@ -129,18 +125,22 @@ describe("Directory", () => {
 
             testObj.setParentDirectory("root");
 
-            const EXPECTED: string[] = [
-               "root/testObj/dir3/dir1", "root/testObj/dir3/dir1",
-               "root/testObj/dir3/dir2", "root/testObj/dir3/dir2",
-               "root/testObj/dir3", "root/testObj/dir3",
-               "root/testObj", "root/testObj",
+            const EXPECTED_MODULE_DIRECTORIES: string[] = [
+               "root/testObj/dir3/dir1/module-1", "root/testObj/dir3/dir1/module-2",
+               "root/testObj/dir3/dir2/module-3", "root/testObj/dir3/dir2/module-4",
+               "root/testObj/dir3/module-5", "root/testObj/dir3/module-6",
+               "root/testObj/module-7", "root/testObj/module-8",
             ];
 
-            for (let index in EXPECTED) {
-               EXPECTED[index] = path.normalize(EXPECTED[index]);
+            const actualModuleDirectories: string[] = [];
+
+            for (let index in EXPECTED_MODULE_DIRECTORIES) {
+               EXPECTED_MODULE_DIRECTORIES[index] =
+                  path.normalize(EXPECTED_MODULE_DIRECTORIES[index]);
+               actualModuleDirectories.push(this.mockedModules[index].directory);
             }
 
-            expect(this.setParentDirectoryCalledWith).toEqual(EXPECTED);
+            expect(actualModuleDirectories).toEqual(EXPECTED_MODULE_DIRECTORIES);
          });
       });
    });

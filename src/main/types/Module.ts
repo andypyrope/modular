@@ -39,8 +39,4 @@ export class Module extends XmlObjectBase {
       }
       this.type = TYPE_MAPPING[TYPE_AS_STRING];
    }
-
-   public setParentDirectory(directory: string): void {
-      this.directory = path.join(directory, this.id);
-   }
 }

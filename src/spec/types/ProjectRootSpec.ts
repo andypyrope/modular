@@ -16,8 +16,7 @@ describe("ProjectRoot", () => {
       this.tsFolder = "ts";
       this.stylesFolder = "styles";
 
-      this.makeModules = (info: { [id: string]: [ModuleType, string[]] }):
-         { [id: string]: Module } => {
+      this.makeModules = (info: { [id: string]: [ModuleType, string[]] }): { [id: string]: Module } => {
          const RESULT: { [id: string]: Module } = {};
          for (let id in info) {
             RESULT[id] = new Module(null);
@@ -38,6 +37,7 @@ describe("ProjectRoot", () => {
          "module-2": [ModuleType.CONTRACT, []],
          "module-3": [ModuleType.GROUP, ["module-0", "module-1"]]
       });
+      spyOn((this.rootDirectory as Directory), "setParentDirectory");
 
       this.build = (): ProjectRoot => {
          const DATA: AdaptedData = new AdaptedDataFactory()
@@ -54,6 +54,8 @@ describe("ProjectRoot", () => {
       it("THEN everything goes well", function (): void {
          let testObj: ProjectRoot = this.build();
 
+         expect((this.rootDirectory as Directory).setParentDirectory)
+            .toHaveBeenCalledWith("");
          expect(testObj.webpackFile).toBe(this.webpackFile);
          expect(testObj.tsFolder).toBe(this.tsFolder);
          expect(testObj.stylesFolder).toBe(this.stylesFolder);

@@ -46,6 +46,8 @@ export class ProjectRoot extends XmlObjectBase {
       ];
 
       this.rootDirectory = this.instantiateChild<Directory>(Directory);
+      this.rootDirectory.setParentDirectory("");
+
       this.modules = this.rootDirectory.modules;
       for (let id in this.modules) {
          this.verifyDependencies(this.modules[id], [id]);

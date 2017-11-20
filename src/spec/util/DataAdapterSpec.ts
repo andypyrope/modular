@@ -1,5 +1,5 @@
-import { DataAdapter } from "./../../main/util/DataAdapter";
-import { AdaptedData } from "./../../main/core/AdaptedData";
+import { DataAdapter } from "../../main/util/DataAdapter";
+import { AdaptedData } from "../../main/core/AdaptedData";
 
 // NOTE alalev: This spec assumes that AdaptedData and FormattedString work correctly
 

@@ -1,4 +1,4 @@
-import { AssertionBase } from "./../../main/assertions/base/AssertionBase";
+import { AssertionBase } from "../../main/assertions/base/AssertionBase";
 
 export class MockAssertion extends AssertionBase {
    constructor() {

@@ -1,5 +1,5 @@
 import { XmlObjectError } from "./XmlObjectError";
-import { FormattedString } from "./../util/FormattedString";
+import { FormattedString } from "../util/FormattedString";
 
 export class ExpectedSingleChildError extends XmlObjectError {
    constructor(childType: string, actualCount: number, xmlObjectLocation: string) {

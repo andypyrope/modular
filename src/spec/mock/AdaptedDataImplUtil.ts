@@ -1,6 +1,6 @@
 
-import { AdaptedDataImpl } from "./../../main/core/AdaptedDataImpl";
-import { AdaptedData } from "./../../main/core/AdaptedData";
+import { AdaptedDataImpl } from "../../main/core/AdaptedDataImpl";
+import { AdaptedData } from "../../main/core/AdaptedData";
 
 export class AdaptedDataImplUtil {
    static readonly DEFAULT_CHILD_TYPE: string = "ChildType";

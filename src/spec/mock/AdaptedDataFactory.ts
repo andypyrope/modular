@@ -1,5 +1,5 @@
-import { AdaptedData } from "./../../main/core/AdaptedData";
-import { AdaptedDataImpl } from "./../../main/core/AdaptedDataImpl";
+import { AdaptedData } from "../../main/core/AdaptedData";
+import { AdaptedDataImpl } from "../../main/core/AdaptedDataImpl";
 
 export class AdaptedDataFactory {
    private dataContent: string = "";
@@ -24,28 +24,28 @@ export class AdaptedDataFactory {
       }
    }
 
-   public text(value: string): AdaptedDataFactory {
+   text(value: string): AdaptedDataFactory {
       this.dataContent = value;
       return this;
    }
 
-   public attr(key: string, value: string): AdaptedDataFactory {
+   attr(key: string, value: string): AdaptedDataFactory {
       this.dataAttributes[key] = value;
       return this;
    }
 
-   public child(tagname: string, child: AdaptedData): AdaptedDataFactory {
+   child(tagname: string, child: AdaptedData): AdaptedDataFactory {
       this.dataChildren[tagname] = this.dataChildren[tagname] || [];
       this.dataChildren[tagname].push(child);
       return this;
    }
 
-   public children(tagname: string, children: AdaptedData[]): AdaptedDataFactory {
+   children(tagname: string, children: AdaptedData[]): AdaptedDataFactory {
       this.dataChildren[tagname] = (this.dataChildren[tagname] || []).concat(children);
       return this;
    }
 
-   public build(): AdaptedData {
+   build(): AdaptedData {
       return new AdaptedDataImpl(
          this.dataContent, this.dataAttributes, this.dataChildren, "ROOT");
    }

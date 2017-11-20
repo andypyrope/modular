@@ -1,7 +1,7 @@
-import { ExpectedSingleChildError } from "./../err/ExpectedSingleChildError";
-import { AttributeNotFoundError } from "./../err/AttributeNotFoundError";
+import { ExpectedSingleChildError } from "../err/ExpectedSingleChildError";
+import { AttributeNotFoundError } from "../err/AttributeNotFoundError";
 import { RawData } from "./RawData";
-import { Assertion } from "./../assertions/Assertion";
+import { Assertion } from "../assertions/Assertion";
 
 /**
  * Represents an XML object. It has content, attributes and children along with methods

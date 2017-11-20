@@ -1,4 +1,4 @@
-import { Queue } from "./../../main/util/Queue";
+import { Queue } from "../../main/util/Queue";
 
 describe("Queue", (): void => {
    describe("#pop", () => {
@@ -34,6 +34,23 @@ describe("Queue", (): void => {
             const testObj: Queue<string> = new Queue();
             testObj.push("asd");
             expect(testObj.empty()).toBe(false);
+         });
+      });
+   });
+
+   describe("#push", () => {
+      describe("WHEN undefined is pushed", () => {
+         it("THEN it throws an error", function (): void {
+            const testObj: Queue<string | undefined> = new Queue();
+            expect((): void => testObj.push(undefined))
+               .toThrowError("Pushing an undefined value is forbidden");
+         });
+      });
+
+      describe("WHEN false is pushed", () => {
+         it("THEN it does not throw an error", function (): void {
+            const testObj: Queue<boolean> = new Queue();
+            expect((): void => testObj.push(false)).not.toThrow();
          });
       });
    });

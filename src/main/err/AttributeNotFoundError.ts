@@ -1,5 +1,5 @@
 import { XmlObjectError } from "./XmlObjectError";
-import { FormattedString } from "./../util/FormattedString";
+import { FormattedString } from "../util/FormattedString";
 
 export class AttributeNotFoundError extends XmlObjectError {
    constructor(attributeName: string, xmlObjectLocation: string) {

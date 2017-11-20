@@ -32,9 +32,6 @@
       <xs:sequence>
          <xs:element name="Directory" type="Directory" minOccurs="1" maxOccurs="1"/>
       </xs:sequence>
-      <xs:attribute name="webpackFile" type="xs:string" use="required"/>
-      <xs:attribute name="tsFolder" type="xs:string" use="required"/>
-      <xs:attribute name="stylesFolder" type="xs:string" use="required"/>
    </xs:complexType>
    <!-- ROOT ELEMENT -->
    <xs:element name="ProjectRoot" type="ProjectRoot"/>

@@ -1,10 +1,12 @@
 import * as fs from "fs";
 import * as xml2js from "xml2js";
-import { ProjectRoot } from "./../types/ProjectRoot";
+import { ProjectRoot } from "../types/ProjectRoot";
 import { XmlObjectBuilder } from "./XmlObjectBuilder";
-import { DataAdapter } from "./../util/DataAdapter";
-import { RawData } from "./../core/RawData";
-import { AdaptedData } from "./../core/AdaptedData";
+import { DataAdapter } from "../util/DataAdapter";
+import { RawData } from "../core/RawData";
+import { AdaptedData } from "../core/AdaptedData";
+import { ParseResult } from "../ParseResult";
+import { ProjectRootImpl } from "../types/impl/ProjectRootImpl";
 
 /**
  * A utility meant to be used when parsing a raw XML file.
@@ -46,12 +48,9 @@ export class ParseUtil {
     * @memberof ParseUtil
     */
    static parseXmlFileContentsSync(contents: string,
-      parseOptions: { [optionKey: string]: any }): { error: Error, result: ProjectRoot } {
+      parseOptions: { [optionKey: string]: any }): ParseResult {
 
-      let returnValue: { error: Error, result: ProjectRoot } = {
-         error: null,
-         result: null
-      };
+      let returnValue: ParseResult = {};
 
       // NOTE alalev: This is done under the assumption that #parseString is NOT async
       xml2js.parseString(contents, parseOptions, (err: Error, res: any): void => {
@@ -61,14 +60,14 @@ export class ParseUtil {
          }
 
          try {
-            const ROOT: RawData = res["ProjectRoot"];
-            if (!ROOT) {
+            const xmlRoot: RawData = res["ProjectRoot"];
+            if (!xmlRoot) {
                throw new Error("The root element is not of type ProjectRoot");
             }
-            const ADAPTED_ROOT: AdaptedData = DataAdapter.adapt(ROOT);
+            const adaptedRoot: AdaptedData = DataAdapter.adapt(xmlRoot);
 
-            returnValue.result = XmlObjectBuilder.instantiate<ProjectRoot>(
-               ADAPTED_ROOT, ProjectRoot);
+            returnValue.result = XmlObjectBuilder.instantiate<ProjectRoot, void>(
+               adaptedRoot, ProjectRootImpl, undefined);
          } catch (e) {
             returnValue.error = e;
          }

@@ -1,127 +1,125 @@
-import { MockUtil } from "./../mock/MockUtil";
-import { Directory } from "./../../main/types/Directory";
-import { ProjectRoot } from "./../../main/types/ProjectRoot";
-import { AdaptedDataFactory } from "./../mock/AdaptedDataFactory";
-import { AdaptedData } from "./../../main/core/AdaptedData";
-import { Module } from "./../../main/types/Module";
-import { ModuleType } from "./../../main/types/ModuleType";
-import { Dependency } from "./../../main/types/Dependency";
+import { MockUtil } from "../mock/MockUtil";
+import { Directory } from "../../main/types/Directory";
+import { ProjectRoot } from "../../main/types/ProjectRoot";
+import { AdaptedDataFactory } from "../mock/AdaptedDataFactory";
+import { AdaptedData } from "../../main/core/AdaptedData";
+import { Module } from "../../main/types/Module";
+import { ModuleType } from "../../main/ModuleType";
+import { Dependency } from "../../main/types/Dependency";
+import { DirectoryMock } from "../mock/types/DirectoryMock";
+import { ProjectRootImpl } from "../../main/types/impl/ProjectRootImpl";
+import { ModuleMock } from "../mock/types/ModuleMock";
+import { DependencyImpl } from "../../main/types/impl/DependencyImpl";
+import { DependencyMock } from "../mock/types/DependencyMock";
+
+interface SS {
+   makeModules(info: { [id: string]: [ModuleType, string[]] }): { [id: string]: ModuleMock };
+   rootDirectory: DirectoryMock;
+   additionalDirectory?: DirectoryMock;
+   hasRootDirectory: boolean;
+   build(): ProjectRoot;
+}
 
 describe("ProjectRoot", () => {
    beforeEach(function (): void {
       MockUtil.initialize();
-      this.rootDirectory = new Directory(null);
-      (this.rootDirectory as Directory).modules = {};
-      this.webpackFile = "wp-config.json";
-      this.tsFolder = "ts";
-      this.stylesFolder = "styles";
+      (this as SS).rootDirectory = new DirectoryMock();
+      (this as SS).hasRootDirectory = true;
 
-      this.makeModules = (info: { [id: string]: [ModuleType, string[]] }): { [id: string]: Module } => {
-         const RESULT: { [id: string]: Module } = {};
+      this.makeModules = (info: { [id: string]: [ModuleType, string[]] }): { [id: string]: ModuleMock } => {
+         const result: { [id: string]: ModuleMock } = {};
          for (let id in info) {
-            RESULT[id] = new Module(null);
-            RESULT[id].id = id;
-            RESULT[id].type = info[id][0];
-            RESULT[id].dependencies = [];
-            for (let dependencyId of info[id][1]) {
-               const DEPENDENCY: Dependency = new Dependency(null);
-               DEPENDENCY.id = dependencyId;
-               RESULT[id].dependencies.push(DEPENDENCY);
+            result[id] = new ModuleMock(id, [], "", info[id][0]);
+            for (const dependencyId of info[id][1]) {
+               result[id].dependencies.push(new DependencyMock(dependencyId));
             }
          }
-         return RESULT;
+         return result;
       };
-      (this.rootDirectory as Directory).modules = this.makeModules({
-         "module-0": [ModuleType.UI, ["module-2"]],
-         "module-1": [ModuleType.SERVER, ["module-2"]],
-         "module-2": [ModuleType.CONTRACT, []],
-         "module-3": [ModuleType.GROUP, ["module-0", "module-1"]]
-      });
-      spyOn((this.rootDirectory as Directory), "setParentDirectory");
 
       this.build = (): ProjectRoot => {
-         const DATA: AdaptedData = new AdaptedDataFactory()
-            .attr("webpackFile", this.webpackFile)
-            .attr("tsFolder", this.tsFolder)
-            .attr("stylesFolder", this.stylesFolder)
-            .children("Directory", MockUtil.registerAll([this.rootDirectory]))
-            .build();
-         return new ProjectRoot(DATA);
+         const directories: (DirectoryMock | undefined)[] = (this as SS).hasRootDirectory
+            ? [(this as SS).rootDirectory, (this as SS).additionalDirectory]
+            : [];
+         return new ProjectRootImpl(new AdaptedDataFactory()
+            .children("Directory", MockUtil.registerAll(directories))
+            .build());
       };
    });
 
    describe("WHEN it is initialized with valid data", () => {
       it("THEN everything goes well", function (): void {
-         let testObj: ProjectRoot = this.build();
+         expect((this as SS).build).not.toThrow();
+      });
+   });
 
-         expect((this.rootDirectory as Directory).setParentDirectory)
-            .toHaveBeenCalledWith("");
-         expect(testObj.webpackFile).toBe(this.webpackFile);
-         expect(testObj.tsFolder).toBe(this.tsFolder);
-         expect(testObj.stylesFolder).toBe(this.stylesFolder);
+   describe("WHEN there is no root directory", () => {
+      it("THEN it throws an error", function (): void {
+         (this as SS).hasRootDirectory = false;
+         expect((this as SS).build).toThrow();
+      });
+   });
+
+   describe("WHEN there are two root directories", () => {
+      it("THEN it throws an error", function (): void {
+         (this as SS).additionalDirectory = new DirectoryMock();
+         expect((this as SS).build).toThrow();
       });
    });
 
    describe("WHEN there is a cyclic dependency", () => {
       it("THEN it throws an error", function (): void {
-         (this.rootDirectory as Directory).modules = this.makeModules({
+         (this as SS).rootDirectory.modules = (this as SS).makeModules({
             "module-1": [ModuleType.CONTRACT, ["module-2"]],
             "module-2": [ModuleType.CONTRACT, ["module-3"]],
             "module-3": [ModuleType.CONTRACT, ["module-1"]],
          });
-         expect(this.build).toThrowError("There is the following cyclic dependency: " +
-            "module-1 -> module-2 -> module-3 -> module-1");
+         expect((this as SS).build).toThrowError("There is the following cyclic " +
+            "dependency: module-1 -> module-2 -> module-3 -> module-1");
       });
    });
 
    describe("WHEN there is a dependency to a module that does not exist", () => {
       it("THEN it throws an error", function (): void {
-         (this.rootDirectory as Directory).modules = this.makeModules({
+         (this as SS).rootDirectory.modules = (this as SS).makeModules({
             "module-1": [ModuleType.CONTRACT, ["module-2"]],
             "module-2": [ModuleType.CONTRACT, ["module-3"]],
             "module-3": [ModuleType.CONTRACT, ["module-4"]],
          });
-         expect(this.build).toThrowError("Module 'module-3' depends on 'module-4' " +
-            "which does not exist");
+         expect((this as SS).build).toThrowError("Module 'module-3' depends on " +
+            "'module-4' which does not exist");
       });
    });
 
    describe("WHEN there is a dependency between invalid module types", () => {
       it("THEN it throws an error", function (): void {
-         const ERROR: string = "Module 'module-1' cannot depend on module 'module-2'. " +
+         const error: string = "Module 'module-1' cannot depend on module 'module-2'. " +
             "The only types it can depend on are: ";
-         (this.rootDirectory as Directory).modules = this.makeModules({
+         (this as SS).rootDirectory.modules = (this as SS).makeModules({
             "module-1": [ModuleType.CONTRACT, ["module-2"]],
             "module-2": [ModuleType.GROUP, []]
          });
-         expect(this.build).toThrowError(ERROR + ModuleType.CONTRACT);
+         expect((this as SS).build).toThrowError(error + ModuleType.CONTRACT);
 
-         (this.rootDirectory as Directory).modules = this.makeModules({
+         (this as SS).rootDirectory.modules = (this as SS).makeModules({
             "module-1": [ModuleType.UI, ["module-2"]],
             "module-2": [ModuleType.SERVER, []]
          });
-         expect(this.build).toThrowError(ERROR +
+         expect((this as SS).build).toThrowError(error +
             [ModuleType.CONTRACT, ModuleType.UI].join(", "));
 
-         (this.rootDirectory as Directory).modules = this.makeModules({
+         (this as SS).rootDirectory.modules = (this as SS).makeModules({
             "module-1": [ModuleType.SERVER, ["module-2"]],
             "module-2": [ModuleType.UI, []]
          });
-         expect(this.build).toThrowError(ERROR +
+         expect((this as SS).build).toThrowError(error +
             [ModuleType.CONTRACT, ModuleType.SERVER].join(", "));
-      });
-   });
-
-   describe("WHEN it is initialized with null or undefined", () => {
-      it("THEN everything goes well", function (): void {
-         expect(() => { new ProjectRoot(null); }).not.toThrow();
-         expect(() => { new ProjectRoot(undefined); }).not.toThrow();
       });
    });
 
    describe("#allModulesOfType", () => {
       it("returns the modules of the specified type", function (): void {
-         (this.rootDirectory as Directory).modules = this.makeModules({
+         (this as SS).rootDirectory.modules = (this as SS).makeModules({
             "module-1": [ModuleType.SERVER, []],
             "module-2": [ModuleType.UI, []],
             "module-3": [ModuleType.UI, []],
@@ -139,7 +137,7 @@ describe("ProjectRoot", () => {
                return result;
             };
 
-         const testObj: ProjectRoot = this.build();
+         const testObj: ProjectRoot = (this as SS).build();
 
          expect(getModuleIds(testObj.allModulesOfType(ModuleType.SERVER)))
             .toEqual(["module-1"]);
@@ -154,7 +152,7 @@ describe("ProjectRoot", () => {
 
    describe("#getBuildOrder", () => {
       it("returns the modules grouped and ordered correctly", function (): void {
-         (this.rootDirectory as Directory).modules = this.makeModules({
+         (this as SS).rootDirectory.modules = (this as SS).makeModules({
             "module-1": [ModuleType.SERVER, ["module-3"]],
             "module-2": [ModuleType.UI, ["module-3", "module-4"]],
             "module-3": [ModuleType.CONTRACT, []],
@@ -162,17 +160,32 @@ describe("ProjectRoot", () => {
             "module-5": [ModuleType.CONTRACT, ["module-6"]],
             "module-6": [ModuleType.CONTRACT, []]
          });
-         const testObj: ProjectRoot = this.build();
-         expect(testObj.getBuildOrder("module-1")).toEqual([["module-3"], ["module-1"]]);
+         const testObj: ProjectRoot = (this as SS).build();
+         expect(testObj.getBuildOrder("module-1")).toEqual(["module-3", "module-1"]);
          expect(testObj.getBuildOrder("module-2")).toEqual([
-            ["module-6"], ["module-5"], ["module-3", "module-4"], ["module-2"]
+            "module-6", "module-5", ["module-3", "module-4"], "module-2"
          ]);
-         expect(testObj.getBuildOrder("module-3")).toEqual([["module-3"]]);
+         expect(testObj.getBuildOrder("module-3")).toEqual(["module-3"]);
          expect(testObj.getBuildOrder("module-4")).toEqual([
-            ["module-6"], ["module-5"], ["module-4"]
+            "module-6", "module-5", "module-4"
          ]);
-         expect(testObj.getBuildOrder("module-5")).toEqual([["module-6"], ["module-5"]]);
-         expect(testObj.getBuildOrder("module-6")).toEqual([["module-6"]]);
+         expect(testObj.getBuildOrder("module-5")).toEqual(["module-6", "module-5"]);
+         expect(testObj.getBuildOrder("module-6")).toEqual(["module-6"]);
+      });
+
+      describe("WHEN it is called with a module that does not exist", () => {
+         it("THEN it throws an error", function (): void {
+            const moduleId: string = "non-existent-module";
+            const errorMessage: string = "Module '" + moduleId + "' does not exist";
+
+            expect((): void => {
+               (this as SS).build().getBuildOrder(moduleId);
+            }).toThrowError(errorMessage);
+
+            expect((): void => {
+               (this as SS).build().getBuildOrder(new ModuleMock(moduleId));
+            }).toThrowError(errorMessage);
+         });
       });
    });
 });

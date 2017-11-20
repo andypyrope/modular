@@ -1,4 +1,4 @@
-import { KebabCaseAssertion } from "./../../main/assertions/KebabCaseAssertion";
+import { KebabCaseAssertion } from "../../main/assertions/KebabCaseAssertion";
 
 describe("KebabCaseAssertion", () => {
    describe("#test", () => {

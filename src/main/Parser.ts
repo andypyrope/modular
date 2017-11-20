@@ -1,5 +1,6 @@
 import { ProjectRoot } from "./types/ProjectRoot";
 import { ParseUtil } from "./util/ParseUtil";
+import { ParseResult } from "./ParseResult";
 
 /**
  * A class that parses an XML file and constructs a {@link ProjectRoot} instance from it.
@@ -26,12 +27,14 @@ export class Parser {
    static parseSync(path: string): ProjectRoot {
       const CONTENTS: string = ParseUtil.readFileSync(path);
 
-      const RESULT: { error: Error, result: ProjectRoot } =
+      const result: ParseResult =
          ParseUtil.parseXmlFileContentsSync(CONTENTS, this.PARSE_OPTIONS);
 
-      if (RESULT.error) {
-         throw RESULT.error;
+      if (result.error) {
+         throw result.error;
+      } else if (result.result) {
+         return result.result;
       }
-      return RESULT.result;
+      throw new Error("No result and no error");
    }
 }

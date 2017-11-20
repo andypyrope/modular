@@ -7,6 +7,8 @@
    // The number of spaces a tab is equal to. This setting is overriden based on the file contents when `editor.detectIndentation` is on.
    "editor.tabSize": 3,
 
+   "genGetSet.pathStringDelimiter": "\"",
+
    // When opening a file, `editor.tabSize` and `editor.insertSpaces` will be detected based on the file contents.
    "editor.detectIndentation": false
 }

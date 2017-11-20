@@ -1,10 +1,10 @@
-import { AdaptedData } from "./../core/AdaptedData";
-import { AdaptedDataImpl } from "./../core/AdaptedDataImpl";
-import { RawData } from "./../core/RawData";
+import { AdaptedData } from "../core/AdaptedData";
+import { AdaptedDataImpl } from "../core/AdaptedDataImpl";
+import { RawData } from "../core/RawData";
 import { FormattedString } from "./FormattedString";
 
 export class DataAdapter {
-   public static adapt(data: RawData): AdaptedData {
+   static adapt(data: RawData): AdaptedData {
       return this.adaptNode(data, "ROOT");
    }
 
@@ -13,9 +13,11 @@ export class DataAdapter {
       let attributes: {[key: string]: string} = {};
       let content: string = node._ || "";
 
-      for (let tagname in node.$$) {
+      const rawChildren: {[tagname: string]: RawData[]} = node.$$ ? node.$$ : {};
+
+      for (let tagname in rawChildren) {
          children[tagname] = [];
-         let childNodes: RawData[] = node.$$[tagname];
+         let childNodes: RawData[] = rawChildren[tagname];
 
          for (let index in childNodes) {
             children[tagname].push(this.adaptNode(childNodes[index], new FormattedString(

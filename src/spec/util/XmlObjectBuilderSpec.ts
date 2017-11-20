@@ -1,25 +1,40 @@
-import { XmlObjectBuilder } from "./../../main/util/XmlObjectBuilder";
-import { MockXmlObject } from "./../mock/MockXmlObject";
-import { AdaptedData } from "./../../main/core/AdaptedData";
-import { MockUtil } from "./../mock/MockUtil";
+import { XmlObjectBuilder } from "../../main/util/XmlObjectBuilder";
+import { MockXmlObject } from "../mock/MockXmlObject";
+import { AdaptedData } from "../../main/core/AdaptedData";
+import { MockUtil } from "../mock/MockUtil";
+import { MockXmlObjectWithAdditional } from "../mock/MockXmlObjectWithAdditional";
 
 describe("XmlObjectBuilder", () => {
    describe("#instantiate", () => {
       describe("WHEN 3 objects are instantiated one after another", () => {
          it("THEN it instantiates them with the correct data", function (): void {
-            const DATA_12: AdaptedData = MockUtil.adaptedDataWithRandomContent();
-            const RESULT_1: MockXmlObject =
-               XmlObjectBuilder.instantiate<MockXmlObject>(DATA_12, MockXmlObject);
-            const RESULT_2: MockXmlObject =
-               XmlObjectBuilder.instantiate<MockXmlObject>(DATA_12, MockXmlObject);
+            const data12: AdaptedData = MockUtil.adaptedDataWithRandomContent();
+            const result1: MockXmlObject =
+               XmlObjectBuilder.instantiate<MockXmlObject, void>(
+                  data12, MockXmlObject, undefined);
+            const result2: MockXmlObject =
+               XmlObjectBuilder.instantiate<MockXmlObject, void>(
+                  data12, MockXmlObject, undefined);
 
-            const DATA_3: AdaptedData = MockUtil.adaptedDataWithRandomContent();
-            const RESULT_3: MockXmlObject =
-               XmlObjectBuilder.instantiate<MockXmlObject>(DATA_3, MockXmlObject);
+            const data3: AdaptedData = MockUtil.adaptedDataWithRandomContent();
+            const result3: MockXmlObject =
+               XmlObjectBuilder.instantiate<MockXmlObject, void>(
+                  data3, MockXmlObject, undefined);
 
-            expect(RESULT_1.data).toBe(DATA_12);
-            expect(RESULT_2.data).toBe(DATA_12);
-            expect(RESULT_3.data).toBe(DATA_3);
+            expect(result1.data).toBe(data12);
+            expect(result2.data).toBe(data12);
+            expect(result3.data).toBe(data3);
+         });
+      });
+
+      describe("WHEN it is called with an object that requires additional data", () => {
+         it("THEN it passes that additional data to the constructor", function (): void {
+            const result: MockXmlObjectWithAdditional =
+               XmlObjectBuilder.instantiate<MockXmlObjectWithAdditional, number>(
+                  MockUtil.adaptedDataWithRandomContent(),
+                  MockXmlObjectWithAdditional,
+                  8);
+            expect(result.additional).toBe(8);
          });
       });
    });
@@ -27,16 +42,32 @@ describe("XmlObjectBuilder", () => {
    describe("#instantiateMultiple", () => {
       describe("WHEN 3 objecst are instantiated at once", () => {
          it("THEN it instantiates them with the correct data", function (): void {
-            const DATA_13: AdaptedData = MockUtil.adaptedDataWithRandomContent();
-            const DATA_2: AdaptedData = MockUtil.adaptedDataWithRandomContent();
-            const DATA: AdaptedData[] = [DATA_13, DATA_2, DATA_13];
-            const RESULT: MockXmlObject[] =
-               XmlObjectBuilder.instantiateMultiple<MockXmlObject>(DATA, MockXmlObject);
+            const data13: AdaptedData = MockUtil.adaptedDataWithRandomContent();
+            const data2: AdaptedData = MockUtil.adaptedDataWithRandomContent();
+            const data: AdaptedData[] = [data13, data2, data13];
+            const result: MockXmlObject[] =
+               XmlObjectBuilder.instantiateMultiple<MockXmlObject, void>(
+                  data, MockXmlObject, undefined);
 
-            expect(RESULT.length).toBe(DATA.length);
-            expect(RESULT[0].data).toBe(DATA[0]);
-            expect(RESULT[1].data).toBe(DATA[1]);
-            expect(RESULT[2].data).toBe(DATA[2]);
+            expect(result.length).toBe(data.length);
+            expect(result[0].data).toBe(data[0]);
+            expect(result[1].data).toBe(data[1]);
+            expect(result[2].data).toBe(data[2]);
+         });
+      });
+
+      describe("WHEN it is called with an object that requires additional data", () => {
+         it("THEN it passes that additional data to the constructor", function (): void {
+            const data: AdaptedData[] = [
+               MockUtil.adaptedDataWithRandomContent(),
+               MockUtil.adaptedDataWithRandomContent()
+            ];
+            const result: MockXmlObjectWithAdditional[] =
+               XmlObjectBuilder.instantiateMultiple<MockXmlObjectWithAdditional, number>(
+                  data, MockXmlObjectWithAdditional, 8);
+            expect(result.length).toBe(2);
+            expect(result[0].additional).toBe(8);
+            expect(result[1].additional).toBe(8);
          });
       });
    });

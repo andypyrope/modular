@@ -1,4 +1,4 @@
-import { Assertion } from "./../Assertion";
+import { Assertion } from "../Assertion";
 
 /**
  * The base abstract class all {@link Assertion} concrete classes should extend.

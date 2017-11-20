@@ -1,18 +1,14 @@
-import { String } from "./../core/String";
+import { String } from "../core/String";
 
 export class FormattedString implements String {
-   private args: string[];
+   private readonly args: string[];
 
-   constructor(private template: string, ...args: string[]) {
-      this.setArgs(args);
+   constructor(private readonly template: string, ...args: string[]) {
+      this.args = args;
    }
 
-   public toNative(): string {
+   toNative(): string {
       return this.args ? this.format() : this.template;
-   }
-
-   private setArgs(args: string[]): void {
-      this.args = (args && args.length) ? args : undefined;
    }
 
    private format(): string {

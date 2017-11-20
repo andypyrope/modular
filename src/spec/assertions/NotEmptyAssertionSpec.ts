@@ -1,4 +1,4 @@
-import { NotEmptyAssertion } from "./../../main/assertions/NotEmptyAssertion";
+import { NotEmptyAssertion } from "../../main/assertions/NotEmptyAssertion";
 
 describe("NotEmptyAssertion", () => {
    describe("#test", () => {

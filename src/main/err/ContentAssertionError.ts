@@ -1,6 +1,6 @@
 import { XmlObjectError } from "./XmlObjectError";
-import { FormattedString } from "./../util/FormattedString";
-import { Assertion } from "./../assertions/Assertion";
+import { FormattedString } from "../util/FormattedString";
+import { Assertion } from "../assertions/Assertion";
 
 export class ContentAssertionError extends XmlObjectError {
    constructor(attributeName: string, assertion: Assertion, xmlObjectLocation: string) {

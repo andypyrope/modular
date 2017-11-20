@@ -1,10 +1,10 @@
-import { ExpectedSingleChildError } from "./../err/ExpectedSingleChildError";
-import { AttributeNotFoundError } from "./../err/AttributeNotFoundError";
-import { AttributeAssertionError } from "./../err/AttributeAssertionError";
-import { ContentAssertionError } from "./../err/ContentAssertionError";
+import { ExpectedSingleChildError } from "../err/ExpectedSingleChildError";
+import { AttributeNotFoundError } from "../err/AttributeNotFoundError";
+import { AttributeAssertionError } from "../err/AttributeAssertionError";
+import { ContentAssertionError } from "../err/ContentAssertionError";
 import { RawData } from "./RawData";
 import { AdaptedData } from "./AdaptedData";
-import { Assertion } from "./../assertions/Assertion";
+import { Assertion } from "../assertions/Assertion";
 
 /**
  * The implementation of {@link AdaptedData}
@@ -21,7 +21,7 @@ export class AdaptedDataImpl implements AdaptedData {
       private xmlObjectLocation: string) {
    }
 
-   public getSingleChild(tagname: string): AdaptedData {
+   getSingleChild(tagname: string): AdaptedData {
       let foundChildren: AdaptedData[] = this.children[tagname] || [];
       if (foundChildren.length !== 1) {
          throw new ExpectedSingleChildError(tagname, foundChildren.length,
@@ -31,12 +31,12 @@ export class AdaptedDataImpl implements AdaptedData {
       return foundChildren[0];
    }
 
-   public getChildren(tagname: string): AdaptedData[] {
+   getChildren(tagname: string): AdaptedData[] {
       let children: AdaptedData[] = this.children[tagname];
       return children ? children.slice() : [];
    }
 
-   public getContent(assertions: Assertion[] = []): string {
+   getContent(assertions: Assertion[] = []): string {
       let content: string = this.content;
       if (!content) {
          content = "";
@@ -58,7 +58,7 @@ export class AdaptedDataImpl implements AdaptedData {
       return content;
    }
 
-   public getAttribute(key: string, assertions: Assertion[] = []): string {
+   getAttribute(key: string, assertions: Assertion[] = []): string {
       let attribute: string = this.attributes[key];
 
       if (attribute === undefined) {

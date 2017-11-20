@@ -1,27 +1,29 @@
-import { XmlObjectBuilder } from "./../../main/util/XmlObjectBuilder";
-import { XmlObject } from "./../../main/XmlObject";
-import { AdaptedData } from "./../../main/core/AdaptedData";
-import { AdaptedDataImpl } from "./../../main/core/AdaptedDataImpl";
+import { XmlObjectBuilder } from "../../main/util/XmlObjectBuilder";
+import { XmlObject } from "../../main/XmlObject";
+import { AdaptedData } from "../../main/core/AdaptedData";
+import { AdaptedDataImpl } from "../../main/core/AdaptedDataImpl";
 
 export class MockUtil {
    private static mockTable: { [id: string]: XmlObject } = {};
 
-   public static adaptedDataWithRandomContent(): AdaptedData {
+   static adaptedDataWithRandomContent(): AdaptedData {
       return new AdaptedDataImpl(this.randomString(10), {}, {}, "MOCK");
    }
 
-   public static registerAll(objects: XmlObject[] | XmlObject): AdaptedData[] {
+   static registerAll(objects: XmlObject[] | XmlObject): AdaptedData[] {
       if (!(objects instanceof Array)) {
          throw new Error("Expected array.");
       }
       let result: AdaptedData[] = [];
       for (let object of objects) {
-         result.push(this.registerMock(object));
+         if (object) {
+            result.push(this.registerMock(object));
+         }
       }
       return result;
    }
 
-   public static registerMock(object: XmlObject): AdaptedData {
+   static registerMock(object: XmlObject): AdaptedData {
       const id: string = "mock:" + this.randomString(5);
       expect(this.mockTable[id]).not.toBeDefined();
       this.mockTable[id] = object;
@@ -29,7 +31,7 @@ export class MockUtil {
       return new AdaptedDataImpl(id, {}, {}, "MOCK");
    }
 
-   public static initialize(): void {
+   static initialize(): void {
       spyOn(XmlObjectBuilder, "instantiate").and.callFake(
          (data: AdaptedData, type: any): XmlObject => {
             return this.getSingleMock(data);

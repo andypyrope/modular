@@ -9,35 +9,35 @@ interface SS {
 }
 
 describe("Dependency", () => {
-   beforeEach(function (): void {
+   beforeEach(function (this: SS): void {
       MockUtil.initialize();
-      (this as SS).id = "some-dependency-id";
+      this.id = "some-dependency-id";
 
-      (this as SS).build = (): Dependency => {
+      this.build = (): Dependency => {
          return new DependencyImpl(new AdaptedDataFactory()
-            .text((this as SS).id)
+            .text(this.id)
             .build());
       };
    });
 
    describe("WHEN it is initialized with a valid ID", () => {
-      it("THEN everything goes well", function (): void {
-         let testObj: Dependency = (this as SS).build();
-         expect(testObj.id).toBe((this as SS).id);
+      it("THEN everything goes well", function (this: SS): void {
+         let testObj: Dependency = this.build();
+         expect(testObj.id).toBe(this.id);
       });
    });
 
    describe("WHEN its ID is not in kebab-case", () => {
-      it("THEN it throws an error", function (): void {
-         (this as SS).id = "libModuleName";
-         expect((this as SS).build).toThrow();
+      it("THEN it throws an error", function (this: SS): void {
+         this.id = "libModuleName";
+         expect(this.build).toThrow();
       });
    });
 
    describe("WHEN its ID is empty", () => {
-      it("THEN it throws an error", function (): void {
-         (this as SS).id = "";
-         expect((this as SS).build).toThrow();
+      it("THEN it throws an error", function (this: SS): void {
+         this.id = "";
+         expect(this.build).toThrow();
       });
    });
 });

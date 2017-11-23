@@ -14,27 +14,26 @@ interface SS {
 }
 
 describe("AdaptedDataImpl", () => {
-   beforeEach(function (): void {
-      const assertion: Assertion = new MockAssertion();
-      (this as SS).testSpy = spyOn(assertion, "test").and.callThrough();
-      (this as SS).isSafeSpy = spyOn(assertion, "isSafe").and.callThrough();
-      (this as SS).assertion = assertion;
+   beforeEach(function (this: SS): void {
+      this.assertion = new MockAssertion();
+      this.testSpy = spyOn(this.assertion, "test").and.callThrough();
+      this.isSafeSpy = spyOn(this.assertion, "isSafe").and.callThrough();
    });
 
    describe("WHEN it is instantiated with empty values", () => {
-      it("THEN it does not throw any errors", function (): void {
+      it("THEN it does not throw any errors", function (this: SS): void {
          expect(AdaptedDataImplUtil.empty).not.toThrow();
       });
    });
 
    describe("#getSingleChild", () => {
       describe("WHEN the object has a single child of that type", () => {
-         it("THEN it returns the child", function (): void {
+         it("THEN it returns the child", function (this: SS): void {
             const child: AdaptedData = AdaptedDataImplUtil.empty();
             const testObject: AdaptedData =
                AdaptedDataImplUtil.withDefaultChildren(child);
 
-            expect(() => {
+            expect((): void => {
                testObject.getSingleChild(AdaptedDataImplUtil.DEFAULT_CHILD_TYPE);
             }).not.toThrow();
 
@@ -44,17 +43,17 @@ describe("AdaptedDataImpl", () => {
       });
 
       describe("WHEN the object has no children of that type", () => {
-         it("THEN it throws an error", function (): void {
+         it("THEN it throws an error", function (this: SS): void {
             const testObject: AdaptedData = AdaptedDataImplUtil.empty();
 
-            expect(() => {
+            expect((): void => {
                testObject.getSingleChild(AdaptedDataImplUtil.DEFAULT_CHILD_TYPE);
             }).toThrow();
          });
       });
 
       describe("WHEN the object has more than one child of that type", () => {
-         it("THEN it throws an error", function (): void {
+         it("THEN it throws an error", function (this: SS): void {
             const testObject: AdaptedData = AdaptedDataImplUtil.withDefaultChildren(
                AdaptedDataImplUtil.empty(), AdaptedDataImplUtil.empty());
 
@@ -67,7 +66,7 @@ describe("AdaptedDataImpl", () => {
 
    describe("#getChildren", () => {
       describe("WHEN the object has a single child of that type", () => {
-         it("THEN it returns an array containing the child", function (): void {
+         it("THEN it returns an array containing the child", function (this: SS): void {
             const child: AdaptedData = AdaptedDataImplUtil.empty();
             const testObject: AdaptedData =
                AdaptedDataImplUtil.withDefaultChildren(child);
@@ -84,7 +83,7 @@ describe("AdaptedDataImpl", () => {
       });
 
       describe("WHEN the object has no children of that type", () => {
-         it("THEN it returns an empty array", function (): void {
+         it("THEN it returns an empty array", function (this: SS): void {
             const testObject: AdaptedData = AdaptedDataImplUtil.empty();
 
             expect(() => {
@@ -98,7 +97,7 @@ describe("AdaptedDataImpl", () => {
       });
 
       describe("WHEN the object has more than one child of that type", () => {
-         it("THEN it returns an array containing the children", function (): void {
+         it("THEN it returns an array containing the children", function (this: SS): void {
             const child1: AdaptedData = AdaptedDataImplUtil.empty();
             const child2: AdaptedData = AdaptedDataImplUtil.empty();
             const testObject: AdaptedData =
@@ -118,60 +117,60 @@ describe("AdaptedDataImpl", () => {
    });
 
    describe("#getContent", () => {
-      beforeEach(function (): void {
+      beforeEach(function (this: SS): void {
          const content: string = "asd";
-         (this as SS).content = content;
+         this.content = content;
 
          const TEST_OBJECT: AdaptedData = AdaptedDataImplUtil.withContent(content);
-         (this as SS).testObject = AdaptedDataImplUtil.withContent(content);
+         this.testObject = AdaptedDataImplUtil.withContent(content);
       });
 
-      it("returns the same content the data was instantiated with", function (): void {
-         expect((this as SS).testObject.getContent()).toBe((this as SS).content);
+      it("returns the same content the data was instantiated with", function (this: SS): void {
+         expect(this.testObject.getContent()).toBe(this.content);
       });
 
       describe("WHEN it is called with an assertion", () => {
-         it("THEN it calls the 'test' method of the assertion with the content as an argument", function (): void {
-            (this as SS).testObject.getContent([(this as SS).assertion]);
-            expect((this as SS).testSpy).toHaveBeenCalledTimes(1);
-            expect((this as SS).testSpy.calls.argsFor(0))
-               .toEqual([(this as SS).content]);
+         it("THEN it calls its 'test' method with the content", function (this: SS): void {
+            this.testObject.getContent([this.assertion]);
+            expect(this.testSpy).toHaveBeenCalledTimes(1);
+            expect(this.testSpy.calls.argsFor(0))
+               .toEqual([this.content]);
          });
 
          describe("WHEN the assertion succeeds", () => {
-            it("THEN it returns the content", function (): void {
-               (this as SS).testSpy.and.returnValue(true);
-               expect((this as SS).testObject.getContent()).toBe((this as SS).content);
+            it("THEN it returns the content", function (this: SS): void {
+               this.testSpy.and.returnValue(true);
+               expect(this.testObject.getContent()).toBe(this.content);
             });
          });
 
          describe("WHEN the assertion fails", () => {
-            beforeEach(function (): void {
-               (this as SS).testSpy.and.returnValue(false);
+            beforeEach(function (this: SS): void {
+               this.testSpy.and.returnValue(false);
                spyOn(console, "warn").and.callFake((): void => { });
             });
 
-            it("THEN it calls the 'isSafe' method of the assertion", function (): void {
-               (this as SS).testObject.getContent([(this as SS).assertion]);
-               expect((this as SS).isSafeSpy).toHaveBeenCalledTimes(1);
+            it("THEN it calls the 'isSafe' method of the assertion", function (this: SS): void {
+               this.testObject.getContent([this.assertion]);
+               expect(this.isSafeSpy).toHaveBeenCalledTimes(1);
             });
 
             describe("WHEN the assertion is safe", () => {
-               it("THEN it does not throw an error and returns the content but prints a warning", function (): void {
-                  (this as SS).isSafeSpy.and.returnValue(true);
+               it("THEN it prints a warning and returns the content", function (this: SS): void {
+                  this.isSafeSpy.and.returnValue(true);
                   expect(console.warn).not.toHaveBeenCalled();
                   expect(() => {
-                     (this as SS).testObject.getContent([(this as SS).assertion]);
+                     this.testObject.getContent([this.assertion]);
                   }).not.toThrow();
                   expect(console.warn).toHaveBeenCalledTimes(1);
                });
             });
 
             describe("WHEN the assertion is not safe", () => {
-               it("THEN it throws an error", function (): void {
-                  (this as SS).isSafeSpy.and.returnValue(false);
+               it("THEN it throws an error", function (this: SS): void {
+                  this.isSafeSpy.and.returnValue(false);
                   expect(() => {
-                     (this as SS).testObject.getContent([(this as SS).assertion]);
+                     this.testObject.getContent([this.assertion]);
                   }).toThrow();
                });
             });
@@ -180,70 +179,70 @@ describe("AdaptedDataImpl", () => {
    });
 
    describe("#getAttribute", () => {
-      beforeEach(function (): void {
-         (this as SS).attribute = "asd";
-         (this as SS).key = AdaptedDataImplUtil.DEFAULT_ATTRIBUTE_KEY;
+      beforeEach(function (this: SS): void {
+         this.attribute = "asd";
+         this.key = AdaptedDataImplUtil.DEFAULT_ATTRIBUTE_KEY;
 
          const TEST_OBJECT: AdaptedData =
-            AdaptedDataImplUtil.withDefaultAttribute((this as SS).attribute);
-         (this as SS).testObject = TEST_OBJECT;
+            AdaptedDataImplUtil.withDefaultAttribute(this.attribute);
+         this.testObject = TEST_OBJECT;
       });
 
       describe("WHEN the attribute does not exist", () => {
-         it("THEN it throws an error", function (): void {
+         it("THEN it throws an error", function (this: SS): void {
             expect(() => {
-               AdaptedDataImplUtil.empty().getAttribute((this as SS).key);
+               AdaptedDataImplUtil.empty().getAttribute(this.key);
             }).toThrow();
          });
       });
 
-      it("returns the attribute", function (): void {
-         expect((this as SS).testObject.getAttribute((this as SS).key)).toBe((this as SS).attribute);
+      it("returns the attribute", function (this: SS): void {
+         expect(this.testObject.getAttribute(this.key)).toBe(this.attribute);
       });
 
       describe("WHEN it is called with an assertion", () => {
-         it("THEN it calls the 'test' method of the assertion with the attribute value as an argument", function (): void {
-            (this as SS).testObject.getAttribute((this as SS).key, [(this as SS).assertion]);
-            expect((this as SS).testSpy).toHaveBeenCalledTimes(1);
-            expect((this as SS).testSpy.calls.argsFor(0))
-               .toEqual([(this as SS).attribute]);
+         it("THEN it calls its 'test' method with the attribute value", function (this: SS): void {
+            this.testObject.getAttribute(this.key, [this.assertion]);
+            expect(this.testSpy).toHaveBeenCalledTimes(1);
+            expect(this.testSpy.calls.argsFor(0))
+               .toEqual([this.attribute]);
          });
 
          describe("WHEN the assertion succeeds", () => {
-            it("THEN it returns the attribute value", function (): void {
-               (this as SS).testSpy.and.returnValue(true);
-               expect((this as SS).testObject.getAttribute((this as SS).key, [(this as SS).assertion]))
-                  .toBe((this as SS).attribute);
+            it("THEN it returns the attribute value", function (this: SS): void {
+               this.testSpy.and.returnValue(true);
+               expect(this.testObject.getAttribute(this.key, [this.assertion]))
+                  .toBe(this.attribute);
             });
          });
 
          describe("WHEN the assertion fails", () => {
-            beforeEach(function (): void {
-               (this as SS).testSpy.and.returnValue(false);
+            beforeEach(function (this: SS): void {
+               this.testSpy.and.returnValue(false);
                spyOn(console, "warn").and.callFake((): void => { });
             });
 
-            it("THEN it calls the 'isSafe' method of the assertion", function (): void {
-               (this as SS).testObject.getAttribute((this as SS).key, [(this as SS).assertion]);
-               expect((this as SS).isSafeSpy).toHaveBeenCalledTimes(1);
+            it("THEN it calls the 'isSafe' method of the assertion", function (this: SS): void {
+               this.testObject.getAttribute(this.key, [this.assertion]);
+               expect(this.isSafeSpy).toHaveBeenCalledTimes(1);
             });
 
             describe("WHEN the assertion is safe", () => {
-               it("THEN it does not throw an error and returns the content but prints a warning", function (): void {
-                  (this as SS).isSafeSpy.and.returnValue(true);
+               it("THEN it prints a warning and returns the content", function (this: SS): void {
+                  this.isSafeSpy.and.returnValue(true);
                   expect(console.warn).not.toHaveBeenCalled();
                   expect(() => {
-                     (this as SS).testObject.getAttribute((this as SS).key, [(this as SS).assertion]);
+                     this.testObject.getAttribute(this.key, [this.assertion]);
                   }).not.toThrow();
                   expect(console.warn).toHaveBeenCalledTimes(1);
                });
             });
 
             describe("WHEN the assertion is not safe", () => {
-               it("THEN it throws an error", function (): void {
-                  (this as SS).isSafeSpy.and.returnValue(false);
+               it("THEN it throws an error", function (this: SS): void {
+                  this.isSafeSpy.and.returnValue(false);
                   expect(() => {
-                     (this as SS).testObject.getAttribute((this as SS).key, [(this as SS).assertion]);
+                     this.testObject.getAttribute(this.key, [this.assertion]);
                   }).toThrow();
                });
             });

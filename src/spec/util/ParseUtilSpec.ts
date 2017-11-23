@@ -40,96 +40,96 @@ interface SS {
    spyOnInstantiate: jasmine.Spy;
 }
 
-describe("ParseUtil", (): void => {
-   beforeEach(function (): void {
-      (this as SS).parseOptions = {};
-      (this as SS).callParseXmlFileContentsSync = (): ParseResult =>
-         ParseUtil.parseXmlFileContentsSync((this as SS).contents,
-            (this as SS).parseOptions);
+describe("ParseUtil", () => {
+   beforeEach(function (this: SS): void {
+      this.parseOptions = {};
+      this.callParseXmlFileContentsSync = (): ParseResult =>
+         ParseUtil.parseXmlFileContentsSync(this.contents,
+            this.parseOptions);
    });
 
-   describe("#readFileSync", (): void => {
-      beforeEach(function (): void {
-         (this as SS).filePath = "./some/file/path";
-         (this as SS).callReadFileSync = (): string =>
-            ParseUtil.readFileSync((this as SS).filePath);
+   describe("#readFileSync", () => {
+      beforeEach(function (this: SS): void {
+         this.filePath = "./some/file/path";
+         this.callReadFileSync = (): string =>
+            ParseUtil.readFileSync(this.filePath);
 
-         (this as SS).fileExists = true;
+         this.fileExists = true;
          spyOn(fs, "existsSync").and.callFake(
-            (): boolean => { return (this as SS).fileExists; }
+            (): boolean => { return this.fileExists; }
          );
 
 
-         (this as SS).statResult = {
+         this.statResult = {
             isFile: true
          };
-         spyOn(fs, "statSync").and.callFake((): StatResult => (this as SS).statResult);
+         spyOn(fs, "statSync").and.callFake((): StatResult => this.statResult);
       });
 
-      it("returns the contents of the file", function (): void {
+      it("returns the contents of the file", function (this: SS): void {
          const result: string = "File content";
          spyOn(fs, "readFileSync").and.returnValue(new Buffer(result));
-         expect((this as SS).callReadFileSync).not.toThrow();
-         expect((this as SS).callReadFileSync()).toBe(result);
+         expect(this.callReadFileSync).not.toThrow();
+         expect(this.callReadFileSync()).toBe(result);
       });
 
-      describe("WHEN the file does not exist", (): void => {
-         it("THEN it throws the correct error", function (): void {
-            (this as SS).fileExists = false;
-            expect((this as SS).callReadFileSync)
-               .toThrowError("The file at path '" + (this as SS).filePath + "' does not exist.");
+      describe("WHEN the file does not exist", () => {
+         it("THEN it throws the correct error", function (this: SS): void {
+            this.fileExists = false;
+            expect(this.callReadFileSync)
+               .toThrowError("The file at path '" + this.filePath + "' does not exist.");
          });
       });
 
-      describe("WHEN the path leads to something that is not a file", (): void => {
-         it("THEN it throws the correct error", function (): void {
-            (this as SS).statResult.isFile = false;
-            expect((this as SS).callReadFileSync)
-               .toThrowError("'" + (this as SS).filePath + "' is not a file.");
+      describe("WHEN the path leads to something that is not a file", () => {
+         it("THEN it throws the correct error", function (this: SS): void {
+            this.statResult.isFile = false;
+            expect(this.callReadFileSync)
+               .toThrowError("'" + this.filePath + "' is not a file.");
          });
       });
    });
 
-   describe("#parseXmlFileContentsSync", (): void => {
-      beforeEach(function (): void {
-         (this as SS).contents = "Contents";
+   describe("#parseXmlFileContentsSync", () => {
+      beforeEach(function (this: SS): void {
+         this.contents = "Contents";
 
-         (this as SS).xml2jsContents = undefined;
-         (this as SS).xml2jsParseOptions = {};
+         this.xml2jsContents = undefined;
+         this.xml2jsParseOptions = {};
 
-         (this as SS).xml2jsError = undefined;
-         (this as SS).xml2jsResult = { ProjectRoot: {} };
+         this.xml2jsError = undefined;
+         this.xml2jsResult = { ProjectRoot: {} };
 
-         (this as SS).spyOnParseString = spyOn(xml2js, "parseString").and.callFake(
+         this.spyOnParseString = spyOn(xml2js, "parseString").and.callFake(
             (contents: string, parseOptions: any,
                callback: (error?: Error, result?: any) => void): void => {
-               (this as SS).xml2jsContents = contents;
-               (this as SS).xml2jsParseOptions = parseOptions;
-               callback((this as SS).xml2jsError, (this as SS).xml2jsResult);
+               this.xml2jsContents = contents;
+               this.xml2jsParseOptions = parseOptions;
+               callback(this.xml2jsError, this.xml2jsResult);
             });
 
-         (this as SS).adaptedRoot = new AdaptedDataFactory().build();
-         (this as SS).adaptCalledWith = undefined;
-         (this as SS).spyOnAdapt = spyOn(DataAdapter, "adapt").and.callFake(
+         this.adaptedRoot = new AdaptedDataFactory().build();
+         this.adaptCalledWith = undefined;
+         this.spyOnAdapt = spyOn(DataAdapter, "adapt").and.callFake(
             (data: RawData): AdaptedData => {
-               (this as SS).adaptCalledWith = data;
-               return (this as SS).adaptedRoot;
+               this.adaptCalledWith = data;
+               return this.adaptedRoot;
             });
 
 
-         (this as SS).instantiateData = undefined;
-         (this as SS).instantiateClazz = undefined;
-         (this as SS).projectRoot = new ProjectRootMock();
-         (this as SS).spyOnInstantiate = spyOn(XmlObjectBuilder, "instantiate")
+         this.instantiateData = undefined;
+         this.instantiateClazz = undefined;
+         this.projectRoot = new ProjectRootMock();
+         this.spyOnInstantiate = spyOn(XmlObjectBuilder, "instantiate")
             .and.callFake((data: AdaptedData, clazz: XmlObjectClass<ProjectRoot, void>):
                ProjectRoot => {
-               (this as SS).instantiateData = data;
-               (this as SS).instantiateClazz = clazz;
-               return (this as SS).projectRoot;
+               this.instantiateData = data;
+               this.instantiateClazz = clazz;
+               return this.projectRoot;
             });
 
-         (this as SS).verifyParse = (expectedError?: string): void => {
-            const result: ParseResult = (this as SS).callParseXmlFileContentsSync();
+         this.verifyParse = (expectedError?: string): void => {
+            const result: ParseResult = this.callParseXmlFileContentsSync();
             if (expectedError) {
                expect(result.error).toBeDefined();
                expect(result.result).not.toBeDefined();
@@ -137,63 +137,63 @@ describe("ParseUtil", (): void => {
                expect(actualError).toBe(expectedError);
             } else {
                expect(result.error).not.toBeDefined();
-               expect(result.result).toBe((this as SS).projectRoot);
+               expect(result.result).toBe(this.projectRoot);
             }
          };
       });
 
-      it("returns the instantiated ProjectRoot object", function (): void {
-         (this as SS).verifyParse();
+      it("returns the instantiated ProjectRoot object", function (this: SS): void {
+         this.verifyParse();
 
          expect(xml2js.parseString).toHaveBeenCalledTimes(1);
          const parseStringArgs: any[] =
-            ((this as SS).spyOnParseString as jasmine.Spy).calls.argsFor(0);
-         expect(parseStringArgs[0]).toBe((this as SS).contents);
-         expect(parseStringArgs[1]).toBe((this as SS).parseOptions);
+            (this.spyOnParseString as jasmine.Spy).calls.argsFor(0);
+         expect(parseStringArgs[0]).toBe(this.contents);
+         expect(parseStringArgs[1]).toBe(this.parseOptions);
 
          expect(DataAdapter.adapt).toHaveBeenCalledTimes(1);
-         expect(((this as SS).spyOnAdapt as jasmine.Spy).calls.argsFor(0)[0])
-            .toBe((this as SS).xml2jsResult["ProjectRoot"]);
+         expect((this.spyOnAdapt as jasmine.Spy).calls.argsFor(0)[0])
+            .toBe(this.xml2jsResult["ProjectRoot"]);
 
          expect(XmlObjectBuilder.instantiate).toHaveBeenCalledTimes(1);
          const instantiateArgs: any[] =
-            ((this as SS).spyOnInstantiate as jasmine.Spy).calls.argsFor(0);
-         expect(instantiateArgs[0]).toBe((this as SS).adaptedRoot);
+            (this.spyOnInstantiate as jasmine.Spy).calls.argsFor(0);
+         expect(instantiateArgs[0]).toBe(this.adaptedRoot);
          expect(instantiateArgs[1]).toBe(ProjectRootImpl);
       });
 
-      describe("WHEN xml2js returns an error", (): void => {
-         it("THEN it immediately returns an object with this error", function (): void {
-            (this as SS).xml2jsError = new Error("Failed to parse XML");
-            (this as SS).verifyParse("Failed to parse XML");
+      describe("WHEN xml2js returns an error", () => {
+         it("THEN it immediately returns an object with this error", function (this: SS): void {
+            this.xml2jsError = new Error("Failed to parse XML");
+            this.verifyParse("Failed to parse XML");
             expect(DataAdapter.adapt).not.toHaveBeenCalled();
             expect(XmlObjectBuilder.instantiate).not.toHaveBeenCalled();
          });
       });
 
-      describe("WHEN the root object is not of type ProjectRoot", (): void => {
-         it("THEN it returns an appropriate error", function (): void {
-            (this as SS).xml2jsResult = { SomeOtherObject: {} };
-            (this as SS).verifyParse("The root element is not of type ProjectRoot");
+      describe("WHEN the root object is not of type ProjectRoot", () => {
+         it("THEN it returns an appropriate error", function (this: SS): void {
+            this.xml2jsResult = { SomeOtherObject: {} };
+            this.verifyParse("The root element is not of type ProjectRoot");
             expect(DataAdapter.adapt).not.toHaveBeenCalled();
             expect(XmlObjectBuilder.instantiate).not.toHaveBeenCalled();
          });
       });
 
-      describe("WHEN DataAdapter#adapt throws an error", (): void => {
-         it("THEN it returns an object with this error", function (): void {
+      describe("WHEN DataAdapter#adapt throws an error", () => {
+         it("THEN it returns an object with this error", function (this: SS): void {
             const adaptError: string = "adapt error";
-            (this as SS).spyOnAdapt.and.throwError(adaptError);
-            (this as SS).verifyParse(adaptError);
+            this.spyOnAdapt.and.throwError(adaptError);
+            this.verifyParse(adaptError);
             expect(XmlObjectBuilder.instantiate).not.toHaveBeenCalled();
          });
       });
 
-      describe("WHEN XmlObjectBuilder#instantiate throws an error", (): void => {
-         it("THEN it returns an object with this error", function (): void {
+      describe("WHEN XmlObjectBuilder#instantiate throws an error", () => {
+         it("THEN it returns an object with this error", function (this: SS): void {
             const instantiateError: string = "instantiate error";
-            (this as SS).spyOnInstantiate.and.throwError(instantiateError);
-            (this as SS).verifyParse(instantiateError);
+            this.spyOnInstantiate.and.throwError(instantiateError);
+            this.verifyParse(instantiateError);
          });
       });
    });

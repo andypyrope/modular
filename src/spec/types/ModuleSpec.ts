@@ -17,45 +17,45 @@ interface SS {
 }
 
 describe("Module", () => {
-   beforeEach(function (): void {
+   beforeEach(function (this: SS): void {
       MockUtil.initialize();
-      (this as SS).id = "lib-module-name-1";
-      (this as SS).type = "ui";
-      (this as SS).parentDir = "";
+      this.id = "lib-module-name-1";
+      this.type = "ui";
+      this.parentDir = "";
 
       let mockedDependencies: DependencyMock[] = [];
-      (this as SS).addDependencies = (...dependencies: DependencyMock[]): void => {
+      this.addDependencies = (...dependencies: DependencyMock[]): void => {
          mockedDependencies = mockedDependencies.concat(dependencies);
       };
 
-      (this as SS).build = (): Module => new ModuleImpl(new AdaptedDataFactory()
-         .attr("id", (this as SS).id)
-         .attr("type", (this as SS).type)
+      this.build = (): Module => new ModuleImpl(new AdaptedDataFactory()
+         .attr("id", this.id)
+         .attr("type", this.type)
          .children("Dependency", MockUtil.registerAll(mockedDependencies))
-         .build(), (this as SS).parentDir);
+         .build(), this.parentDir);
    });
 
    describe("WHEN it is initialized with valid data", () => {
-      it("THEN everything goes well", function (): void {
-         (this as SS).parentDir = "parentDir";
-         expect((this as SS).build).not.toThrow();
-         expect((this as SS).build().directory)
-            .toBe(path.join((this as SS).parentDir, (this as SS).id));
+      it("THEN everything goes well", function (this: SS): void {
+         this.parentDir = "parentDir";
+         expect(this.build).not.toThrow();
+         expect(this.build().directory)
+            .toBe(path.join(this.parentDir, this.id));
       });
    });
 
    describe("WHEN its ID is not in kebab-case", () => {
-      it("THEN it throws an error", function (): void {
-         (this as SS).id = "libModuleName";
-         expect((this as SS).build).toThrow();
+      it("THEN it throws an error", function (this: SS): void {
+         this.id = "libModuleName";
+         expect(this.build).toThrow();
       });
    });
 
    describe("WHEN its type is valid", () => {
-      it("THEN it does not throw an error", function (): void {
+      it("THEN it does not throw an error", function (this: SS): void {
          const tryModuleType: (type: ModuleType) => void = (type: ModuleType): void => {
-            (this as SS).type = type;
-            expect((this as SS).build).not.toThrow();
+            this.type = type;
+            expect(this.build).not.toThrow();
          };
          tryModuleType(ModuleType.CONTRACT);
          tryModuleType(ModuleType.GROUP);
@@ -65,9 +65,9 @@ describe("Module", () => {
    });
 
    describe("WHEN its type is not valid", () => {
-      it("THEN it throws an error", function (): void {
+      it("THEN it throws an error", function (this: SS): void {
          this.type = "asd";
-         expect((this as SS).build).toThrow();
+         expect(this.build).toThrow();
       });
    });
 });

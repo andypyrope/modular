@@ -14,69 +14,68 @@ interface SS {
    callParseSync(): ProjectRoot | undefined;
 }
 
-describe("Parser", (): void => {
-   describe("#parseSync", (): void => {
-      beforeEach(function (): void {
-         (this as SS).xmlPath = "./xml/path/xmlFile.xml";
+describe("Parser", () => {
+   describe("#parseSync", () => {
+      beforeEach(function (this: SS): void {
+         this.xmlPath = "./xml/path/xmlFile.xml";
 
-         (this as SS).callParseSync = (): ProjectRoot | undefined => {
-            return Parser.parseSync((this as SS).xmlPath);
+         this.callParseSync = (): ProjectRoot | undefined => {
+            return Parser.parseSync(this.xmlPath);
          };
 
-         (this as SS).fileContents = "<ProjectRoot>asd</ProjectRoot>";
-         (this as SS).spyOnReadFileSync = spyOn(ParseUtil, "readFileSync")
-            .and.returnValue((this as SS).fileContents);
+         this.fileContents = "<ProjectRoot>asd</ProjectRoot>";
+         this.spyOnReadFileSync = spyOn(ParseUtil, "readFileSync")
+            .and.returnValue(this.fileContents);
 
 
-         (this as SS).parseError = undefined;
-         (this as SS).parseResult = new ProjectRootMock();
+         this.parseError = undefined;
+         this.parseResult = new ProjectRootMock();
 
-         (this as SS).spyOnParse = spyOn(ParseUtil, "parseXmlFileContentsSync")
+         this.spyOnParse = spyOn(ParseUtil, "parseXmlFileContentsSync")
             .and.callFake((): ParseResult => {
                return {
-                  error: (this as SS).parseError,
-                  result: (this as SS).parseResult
+                  error: this.parseError,
+                  result: this.parseResult
                };
             });
       });
 
-      it("returns the result", function (): void {
-         expect((this as SS).callParseSync).not.toThrow();
-         expect((this as SS).callParseSync()).toBe((this as SS).parseResult);
+      it("returns the result", function (this: SS): void {
+         expect(this.callParseSync).not.toThrow();
+         expect(this.callParseSync()).toBe(this.parseResult);
 
-         const parseXmlArgs: any[] = (this as SS).spyOnParse.calls.argsFor(0);
-         expect(parseXmlArgs[0]).toBe((this as SS).fileContents);
+         const parseXmlArgs: any[] = this.spyOnParse.calls.argsFor(0);
+         expect(parseXmlArgs[0]).toBe(this.fileContents);
          expect(parseXmlArgs[1]).toBeDefined();
       });
 
-      describe("WHEN ParseUtil throws while reading the file", (): void => {
-         it("THEN it rethrows the error", function (): void {
+      describe("WHEN ParseUtil throws while reading the file", () => {
+         it("THEN it rethrows the error", function (this: SS): void {
             const readError: string = "Could not read the file";
-            (this as SS).spyOnReadFileSync.and.throwError(readError);
-            expect((this as SS).callParseSync).toThrowError(readError);
+            this.spyOnReadFileSync.and.throwError(readError);
+            expect(this.callParseSync).toThrowError(readError);
          });
       });
 
-      describe("WHEN ParseUtil throws while parsing the file", (): void => {
-         it("THEN it rethrows the error", function (): void {
+      describe("WHEN ParseUtil throws while parsing the file", () => {
+         it("THEN it rethrows the error", function (this: SS): void {
             const parseError: string = "Could not parse the file";
-            (this as SS).spyOnParse.and.throwError(parseError);
-            expect((this as SS).callParseSync).toThrowError(parseError);
+            this.spyOnParse.and.throwError(parseError);
+            expect(this.callParseSync).toThrowError(parseError);
          });
       });
 
-      describe("WHEN ParseUtil returns an error while parsing", (): void => {
-         it("THEN it rethrows the error", function (): void {
-            const PARSE_ERROR: string = "Caught an error while parsing";
-            (this as SS).parseError = new Error(PARSE_ERROR);
-            expect((this as SS).callParseSync).toThrowError(PARSE_ERROR);
+      describe("WHEN ParseUtil returns an error while parsing", () => {
+         it("THEN it rethrows the error", function (this: SS): void {
+            this.parseError = new Error("Caught an error while parsing");
+            expect(this.callParseSync).toThrow(this.parseError);
          });
       });
 
-      describe("WHEN ParseUtil returns neither an error nor a result", (): void => {
-         it("THEN it throws an error", function (): void {
-            (this as SS).parseResult = undefined;
-            expect((this as SS).callParseSync).toThrowError("No result and no error");
+      describe("WHEN ParseUtil returns neither an error nor a result", () => {
+         it("THEN it throws an error", function (this: SS): void {
+            this.parseResult = undefined;
+            expect(this.callParseSync).toThrowError("No result and no error");
          });
       });
    });

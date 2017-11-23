@@ -4,9 +4,12 @@ import { ModuleType } from "../../../../main/ModuleType";
 import { ProjectRoot } from "../../../../main/types/ProjectRoot";
 import * as path from "path";
 
-describe("[E2E] AdvancedTest", (): void => {
-   describe("WHEN there is a project root with many directories and modules", (): void => {
-      it("THEN no error is thrown", function (): void {
+interface SS {
+}
+
+describe("[E2E] AdvancedTest", () => {
+   describe("WHEN there is a project root with many directories and modules", () => {
+      it("THEN no error is thrown", function (this: SS): void {
          const pathToXml: string = __filename
             .replace("dist", "src")
             .replace(/\.js$/, ".xml");

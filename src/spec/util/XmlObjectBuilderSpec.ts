@@ -4,10 +4,13 @@ import { AdaptedData } from "../../main/core/AdaptedData";
 import { MockUtil } from "../mock/MockUtil";
 import { MockXmlObjectWithAdditional } from "../mock/MockXmlObjectWithAdditional";
 
+interface SS {
+}
+
 describe("XmlObjectBuilder", () => {
    describe("#instantiate", () => {
       describe("WHEN 3 objects are instantiated one after another", () => {
-         it("THEN it instantiates them with the correct data", function (): void {
+         it("THEN it instantiates them with the correct data", function (this: SS): void {
             const data12: AdaptedData = MockUtil.adaptedDataWithRandomContent();
             const result1: MockXmlObject =
                XmlObjectBuilder.instantiate<MockXmlObject, void>(
@@ -28,7 +31,7 @@ describe("XmlObjectBuilder", () => {
       });
 
       describe("WHEN it is called with an object that requires additional data", () => {
-         it("THEN it passes that additional data to the constructor", function (): void {
+         it("THEN it passes that additional data to the constructor", function (this: SS): void {
             const result: MockXmlObjectWithAdditional =
                XmlObjectBuilder.instantiate<MockXmlObjectWithAdditional, number>(
                   MockUtil.adaptedDataWithRandomContent(),
@@ -41,7 +44,7 @@ describe("XmlObjectBuilder", () => {
 
    describe("#instantiateMultiple", () => {
       describe("WHEN 3 objecst are instantiated at once", () => {
-         it("THEN it instantiates them with the correct data", function (): void {
+         it("THEN it instantiates them with the correct data", function (this: SS): void {
             const data13: AdaptedData = MockUtil.adaptedDataWithRandomContent();
             const data2: AdaptedData = MockUtil.adaptedDataWithRandomContent();
             const data: AdaptedData[] = [data13, data2, data13];
@@ -57,7 +60,7 @@ describe("XmlObjectBuilder", () => {
       });
 
       describe("WHEN it is called with an object that requires additional data", () => {
-         it("THEN it passes that additional data to the constructor", function (): void {
+         it("THEN it passes that additional data to the constructor", function (this: SS): void {
             const data: AdaptedData[] = [
                MockUtil.adaptedDataWithRandomContent(),
                MockUtil.adaptedDataWithRandomContent()

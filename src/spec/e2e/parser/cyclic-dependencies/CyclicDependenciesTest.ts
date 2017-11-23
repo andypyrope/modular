@@ -1,9 +1,12 @@
 import { Parser } from "../../../../main/Parser";
 import { ProjectRoot } from "../../../../main/types/ProjectRoot";
 
-describe("[E2E] CyclicDependenciesTest", (): void => {
-   describe("WHEN there is a cyclic dependency", (): void => {
-      it("THEN an error is thrown", function (): void {
+interface SS {
+}
+
+describe("[E2E] CyclicDependenciesTest", () => {
+   describe("WHEN there is a cyclic dependency", () => {
+      it("THEN an error is thrown", function (this: SS): void {
          const pathToXml: string = __filename
             .replace("dist", "src")
             .replace(/\.js$/, ".xml");

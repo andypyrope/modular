@@ -18,72 +18,72 @@ interface SS {
 }
 
 describe("Directory", () => {
-   beforeEach(function (): void {
+   beforeEach(function (this: SS): void {
       MockUtil.initialize();
 
       let mockedDirectories: DirectoryMock[] = [];
-      (this as SS).addDirectories = (...directories: DirectoryMock[]): void => {
+      this.addDirectories = (...directories: DirectoryMock[]): void => {
          mockedDirectories = mockedDirectories.concat(directories);
       };
 
       let mockedModules: ModuleMock[] = [];
-      (this as SS).addModules = (...modules: ModuleMock[]): void => {
+      this.addModules = (...modules: ModuleMock[]): void => {
          mockedModules = mockedModules.concat(modules);
       };
 
-      (this as SS).parentDir = "";
-      (this as SS).dirName = "dir-name";
+      this.parentDir = "";
+      this.dirName = "dir-name";
 
-      (this as SS).build = (): Directory => new DirectoryImpl(new AdaptedDataFactory()
-         .attr("name", (this as SS).dirName)
+      this.build = (): Directory => new DirectoryImpl(new AdaptedDataFactory()
+         .attr("name", this.dirName)
          .children("Directory", MockUtil.registerAll(mockedDirectories))
          .children("Module", MockUtil.registerAll(mockedModules))
-         .build(), (this as SS).parentDir);
+         .build(), this.parentDir);
    });
 
    describe("WHEN it is initialized with valid data", () => {
-      it("THEN everything goes well", function (): void {
-         (this as SS).parentDir = "parentDir";
-         expect((this as SS).build).not.toThrow();
-         expect((this as SS).build().dirPath)
-            .toBe(path.join((this as SS).parentDir, (this as SS).dirName));
+      it("THEN everything goes well", function (this: SS): void {
+         this.parentDir = "parentDir";
+         expect(this.build).not.toThrow();
+         expect(this.build().dirPath)
+            .toBe(path.join(this.parentDir, this.dirName));
       });
    });
 
    describe("WHEN its name is empty", () => {
-      it("THEN it throws an error", function (): void {
-         (this as SS).dirName = "";
-         expect((this as SS).build).toThrow();
+      it("THEN it throws an error", function (this: SS): void {
+         this.dirName = "";
+         expect(this.build).toThrow();
       });
    });
 
    describe("WHEN it has two modules with the same ID", () => {
-      it("THEN it throws an error", function (): void {
+      it("THEN it throws an error", function (this: SS): void {
          const moduleId: string = "some-module-id";
-         (this as SS).addModules(new ModuleMock(moduleId), new ModuleMock(moduleId));
-         expect((this as SS).build).toThrow();
+         this.addModules(new ModuleMock(moduleId), new ModuleMock(moduleId));
+         expect(this.build).toThrow();
       });
    });
 
    describe("WHEN it has two child modules", () => {
-      beforeEach(function (): void {
-         (this as SS).addModules(new ModuleMock(), new ModuleMock);
+      beforeEach(function (this: SS): void {
+         this.addModules(new ModuleMock(), new ModuleMock);
       });
 
-      it("THEN it contains them", function (): void {
-         const testObj: Directory = (this as SS).build();
+      it("THEN it contains them", function (this: SS): void {
+         const testObj: Directory = this.build();
          expect(Object.keys(testObj.modules).length).toBe(2);
       });
 
       describe("WHEN it has two child directories with two child modules each", () => {
-         it("THEN it contains all directories and all modules", function (): void {
-            (this as SS).addDirectories(new DirectoryMock("",
+         it("THEN it contains all directories and all modules", function (this: SS): void {
+            this.addDirectories(new DirectoryMock("",
                [new ModuleMock(), new ModuleMock()]));
 
-            (this as SS).addDirectories(new DirectoryMock("",
+            this.addDirectories(new DirectoryMock("",
                [new ModuleMock(), new ModuleMock()]));
 
-            const testObj: Directory = (this as SS).build();
+            const testObj: Directory = this.build();
             expect(testObj.directModules.length).toBe(2);
             expect(Object.keys(testObj.modules).length).toBe(6);
          });

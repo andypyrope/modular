@@ -1,9 +1,12 @@
 import { Parser } from "../../../../main/Parser";
 import { ProjectRoot } from "../../../../main/types/ProjectRoot";
 
-describe("[E2E] DependencyTest", (): void => {
-   describe("WHEN there are complex dependencies between modules", (): void => {
-      it("THEN their dependencies are well-grouped and well-ordered", function (): void {
+interface SS {
+}
+
+describe("[E2E] DependencyTest", () => {
+   describe("WHEN there are complex dependencies between modules", () => {
+      it("THEN their dependencies are well-grouped and well-ordered", function (this: SS): void {
          const pathToXml: string = __filename
             .replace("dist", "src")
             .replace(/\.js$/, ".xml");

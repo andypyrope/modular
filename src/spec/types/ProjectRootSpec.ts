@@ -13,7 +13,8 @@ import { DependencyImpl } from "../../main/types/impl/DependencyImpl";
 import { DependencyMock } from "../mock/types/DependencyMock";
 
 interface SS {
-   makeModules(info: { [id: string]: [ModuleType, string[]] }): { [id: string]: ModuleMock };
+   modules: Module[];
+   makeModuleMap(...modules: ModuleMock[]): { [id: string]: Module };
    rootDirectory: DirectoryMock;
    additionalDirectory?: DirectoryMock;
    hasRootDirectory: boolean;
@@ -26,13 +27,12 @@ describe("ProjectRoot", () => {
       this.rootDirectory = new DirectoryMock();
       this.hasRootDirectory = true;
 
-      this.makeModules = (info: { [id: string]: [ModuleType, string[]] }): { [id: string]: ModuleMock } => {
+      this.modules = [];
+      this.makeModuleMap = (...modules: ModuleMock[]): { [id: string]: Module } => {
+         this.modules = modules;
          const result: { [id: string]: ModuleMock } = {};
-         for (let id in info) {
-            result[id] = new ModuleMock(id, [], "", info[id][0]);
-            for (const dependencyId of info[id][1]) {
-               result[id].dependencies.push(new DependencyMock(dependencyId));
-            }
+         for (const currentModule of modules) {
+            result[currentModule.id] = currentModule;
          }
          return result;
       };
@@ -69,11 +69,11 @@ describe("ProjectRoot", () => {
 
    describe("WHEN there is a cyclic dependency", () => {
       it("THEN it throws an error", function (this: SS): void {
-         this.rootDirectory.modules = this.makeModules({
-            "module-1": [ModuleType.CONTRACT, ["module-2"]],
-            "module-2": [ModuleType.CONTRACT, ["module-3"]],
-            "module-3": [ModuleType.CONTRACT, ["module-1"]],
-         });
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1", ["module-2"]),
+            new ModuleMock("module-2", ["module-3"]),
+            new ModuleMock("module-3", ["module-1"])
+         );
          expect(this.build).toThrowError("There is the following cyclic " +
             "dependency: module-1 -> module-2 -> module-3 -> module-1");
       });
@@ -81,11 +81,11 @@ describe("ProjectRoot", () => {
 
    describe("WHEN there is a dependency to a module that does not exist", () => {
       it("THEN it throws an error", function (this: SS): void {
-         this.rootDirectory.modules = this.makeModules({
-            "module-1": [ModuleType.CONTRACT, ["module-2"]],
-            "module-2": [ModuleType.CONTRACT, ["module-3"]],
-            "module-3": [ModuleType.CONTRACT, ["module-4"]],
-         });
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1", ["module-2"]),
+            new ModuleMock("module-2", ["module-3"]),
+            new ModuleMock("module-3", ["module-4"])
+         );
          expect(this.build).toThrowError("Module 'module-3' depends on " +
             "'module-4' which does not exist");
       });
@@ -95,23 +95,23 @@ describe("ProjectRoot", () => {
       it("THEN it throws an error", function (this: SS): void {
          const error: string = "Module 'module-1' cannot depend on module 'module-2'. " +
             "The only types it can depend on are: ";
-         this.rootDirectory.modules = this.makeModules({
-            "module-1": [ModuleType.CONTRACT, ["module-2"]],
-            "module-2": [ModuleType.GROUP, []]
-         });
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1", ["module-2"], "", ModuleType.CONTRACT),
+            new ModuleMock("module-2", [], "", ModuleType.GROUP)
+         );
          expect(this.build).toThrowError(error + ModuleType.CONTRACT);
 
-         this.rootDirectory.modules = this.makeModules({
-            "module-1": [ModuleType.UI, ["module-2"]],
-            "module-2": [ModuleType.SERVER, []]
-         });
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1", ["module-2"], "", ModuleType.UI),
+            new ModuleMock("module-2", [], "", ModuleType.SERVER)
+         );
          expect(this.build).toThrowError(error +
             [ModuleType.CONTRACT, ModuleType.UI].join(", "));
 
-         this.rootDirectory.modules = this.makeModules({
-            "module-1": [ModuleType.SERVER, ["module-2"]],
-            "module-2": [ModuleType.UI, []]
-         });
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1", ["module-2"], "", ModuleType.SERVER),
+            new ModuleMock("module-2", [], "", ModuleType.UI)
+         );
          expect(this.build).toThrowError(error +
             [ModuleType.CONTRACT, ModuleType.SERVER].join(", "));
       });
@@ -119,14 +119,14 @@ describe("ProjectRoot", () => {
 
    describe("#allModulesOfType", () => {
       it("returns the modules of the specified type", function (this: SS): void {
-         this.rootDirectory.modules = this.makeModules({
-            "module-1": [ModuleType.SERVER, []],
-            "module-2": [ModuleType.UI, []],
-            "module-3": [ModuleType.UI, []],
-            "module-4": [ModuleType.CONTRACT, []],
-            "module-5": [ModuleType.CONTRACT, []],
-            "module-6": [ModuleType.GROUP, []]
-         });
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1", [], "", ModuleType.SERVER),
+            new ModuleMock("module-2", [], "", ModuleType.UI),
+            new ModuleMock("module-3", [], "", ModuleType.UI),
+            new ModuleMock("module-4", [], "", ModuleType.CONTRACT),
+            new ModuleMock("module-5", [], "", ModuleType.CONTRACT),
+            new ModuleMock("module-6", [], "", ModuleType.GROUP)
+         );
 
          const getModuleIds: (modules: Module[]) => string[] =
             (modules: Module[]): string[] => {
@@ -150,16 +150,45 @@ describe("ProjectRoot", () => {
       });
    });
 
+   describe("#getDependentModuleIds", () => {
+      beforeEach(function (this: SS): void {
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1"),
+            new ModuleMock("module-2", ["module-1"]),
+            new ModuleMock("module-3", ["module-2", "module-1"])
+         );
+      });
+
+      describe("WHEN it is called with a module ID", () => {
+         it("THEN it returns the correct values", function (this: SS): void {
+            expect(this.build().getDependentModuleIds("module-1"))
+               .toEqual(["module-2", "module-3"]);
+            expect(this.build().getDependentModuleIds("module-2")).toEqual(["module-3"]);
+            expect(this.build().getDependentModuleIds("module-3")).toEqual([]);
+         });
+      });
+
+      describe("WHEN it is called with a module object", () => {
+         it("THEN it returns the correct values", function (this: SS): void {
+            expect(this.build().getDependentModuleIds(this.modules[0]))
+               .toEqual(["module-2", "module-3"]);
+            expect(this.build().getDependentModuleIds(this.modules[1]))
+               .toEqual(["module-3"]);
+            expect(this.build().getDependentModuleIds(this.modules[2])).toEqual([]);
+         });
+      });
+   });
+
    describe("#getBuildOrder", () => {
       it("returns the modules grouped and ordered correctly", function (this: SS): void {
-         this.rootDirectory.modules = this.makeModules({
-            "module-1": [ModuleType.SERVER, ["module-3"]],
-            "module-2": [ModuleType.UI, ["module-3", "module-4"]],
-            "module-3": [ModuleType.CONTRACT, []],
-            "module-4": [ModuleType.UI, ["module-5", "module-6"]],
-            "module-5": [ModuleType.CONTRACT, ["module-6"]],
-            "module-6": [ModuleType.CONTRACT, []]
-         });
+         this.rootDirectory.modules = this.makeModuleMap(
+            new ModuleMock("module-1", ["module-3"]),
+            new ModuleMock("module-2", ["module-3", "module-4"]),
+            new ModuleMock("module-3", []),
+            new ModuleMock("module-4", ["module-5", "module-6"]),
+            new ModuleMock("module-5", ["module-6"]),
+            new ModuleMock("module-6", [])
+         );
          const testObj: ProjectRoot = this.build();
          expect(testObj.getBuildOrder("module-1")).toEqual(["module-3", "module-1"]);
          expect(testObj.getBuildOrder("module-2")).toEqual([

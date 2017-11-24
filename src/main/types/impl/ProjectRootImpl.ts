@@ -50,14 +50,21 @@ export class ProjectRootImpl extends XmlObjectBase implements ProjectRoot {
       return result;
    }
 
-   getBuildOrder(sourceModule: Module | string): (string | string[])[] {
-      const moduleId: string = (typeof sourceModule === "string")
-         ? sourceModule
-         : sourceModule.id;
+   getDependentModuleIds(module: Module | string): string[] {
+      const moduleId: string = this.toModuleId(module);
+      const result: string[] = [];
 
-      if (!this.modules[moduleId]) {
-         throw new Error("Module '" + moduleId + "' does not exist");
+      for (const potentiallyDependentId in this.modules) {
+         if (this.modules[potentiallyDependentId].dependsOn(moduleId)) {
+            result.push(potentiallyDependentId);
+         }
       }
+
+      return result;
+   }
+
+   getBuildOrder(sourceModule: Module | string): (string | string[])[] {
+      const moduleId: string = this.toModuleId(sourceModule);
 
       const allModules: { [id: string]: Module } = {};
       const visited: { [moduleId: string]: true } = {};
@@ -106,6 +113,18 @@ export class ProjectRootImpl extends XmlObjectBase implements ProjectRoot {
       }
 
       return simplifiedResult.reverse();
+   }
+
+   private toModuleId(module: Module | string): string {
+      const moduleId: string = (typeof module === "string")
+         ? module
+         : module.id;
+
+      if (!this.modules[moduleId]) {
+         throw new Error("Module '" + moduleId + "' does not exist");
+      }
+
+      return moduleId;
    }
 
    private verifyDependencies(currentModule: Module, visited: string[]): void {

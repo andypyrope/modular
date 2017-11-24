@@ -70,4 +70,22 @@ describe("Module", () => {
          expect(this.build).toThrow();
       });
    });
+
+   describe("#dependsOn", () => {
+      describe("WHEN the module contains a dependency to the target", () => {
+         it("THEN it returns true", function (this: SS): void {
+            const targetModuleId: string = "some-other-module";
+            this.addDependencies(new DependencyMock(targetModuleId));
+            expect(this.build().dependsOn(targetModuleId)).toBe(true);
+         });
+      });
+
+      describe("WHEN the module does not contain a dependency to the target", () => {
+         it("THEN it returns false", function (this: SS): void {
+            const targetModuleId: string = "some-other-module";
+            this.addDependencies(new DependencyMock(targetModuleId));
+            expect(this.build().dependsOn(targetModuleId + "asd")).toBe(false);
+         });
+      });
+   });
 });

@@ -26,6 +26,12 @@ export interface ProjectRoot extends XmlObject {
    allModulesOfType(type: ModuleType): Module[];
 
    /**
+    * @param module The module or the ID of the module to look for
+    * @return The IDs of all modules that depend on the specified one
+    */
+   getDependentModuleIds(module: Module | string): string[];
+
+   /**
     * Gets the dependencies of a module as well as the module itself in the form of
     * strings (their IDs).
     *

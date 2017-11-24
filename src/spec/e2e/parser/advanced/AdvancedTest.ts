@@ -20,6 +20,13 @@ describe("[E2E] AdvancedTest", () => {
          expect(someModule.id).toBe("module-11");
          expect(someModule.directory)
             .toBe(["someDirectory", "dir1", "module-11"].join(path.sep));
+
+         expect(project.getDependentModuleIds("module-11").sort())
+            .toEqual(["module-12", "module-1"].sort());
+         expect(project.getDependentModuleIds("module-2")).toEqual(["module-1"]);
+         expect(project.getDependentModuleIds("module-12")).toEqual([]);
+         expect(project.getDependentModuleIds(project.modules["module-11"]).sort())
+            .toEqual(["module-12", "module-1"].sort());
       });
    });
 });

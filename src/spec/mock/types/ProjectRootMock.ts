@@ -13,6 +13,10 @@ export class ProjectRootMock implements ProjectRoot {
       return [];
    }
 
+   getDependentModuleIds(module: Module | string): string[] {
+      return [];
+   }
+
    getBuildOrder(): (string | string[])[] {
       return [];
    }

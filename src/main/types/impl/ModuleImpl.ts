@@ -38,4 +38,14 @@ export class ModuleImpl extends XmlObjectBase implements Module {
       this.directory = path.join(parentPath, this.id);
       this.dependencies = this.instantiateChildren<Dependency>(DependencyImpl);
    }
+
+   public dependsOn(otherModuleId: string): boolean {
+      for (const dependency of this.dependencies) {
+         if (dependency.id === otherModuleId) {
+            return true;
+         }
+      }
+
+      return false;
+   }
 }

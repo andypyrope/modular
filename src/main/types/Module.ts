@@ -23,4 +23,10 @@ export interface Module extends XmlObject {
     * The type of this module
     */
    readonly type: ModuleType;
+
+   /**
+    * @param otherModuleId The ID of the other module
+    * @return Whether this module depends on another one
+    */
+   dependsOn(otherModuleId: string): boolean;
 }
